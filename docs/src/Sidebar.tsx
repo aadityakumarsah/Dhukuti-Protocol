@@ -1,6 +1,5 @@
 import {
   ChevronDown,
-  ChevronRight,
   FileText,
   Box,
   BookOpen,
@@ -11,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { Logo } from "./Logo";
 
 type NavItem = {
   label: string;
@@ -186,13 +186,18 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
     <>
       <div className="p-4 pb-2">
         <div className="flex items-center justify-between mb-1">
-          <div>
-            <a href="#" className="text-base font-bold tracking-tight">
-              Dhukuti Docs
-            </a>
-            <p className="text-[11px] text-sidebar-foreground/50 mt-0.5">
-              Protocol documentation
-            </p>
+          <div className="flex items-center gap-2.5">
+            <div className="text-primary">
+              <Logo size={22} />
+            </div>
+            <div>
+              <a href="#" className="text-base font-bold tracking-tight">
+                Dhukuti Docs
+              </a>
+              <p className="text-[11px] text-sidebar-foreground/50 mt-0.5">
+                Protocol documentation
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}

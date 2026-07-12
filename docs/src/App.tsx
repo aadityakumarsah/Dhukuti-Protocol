@@ -5,7 +5,8 @@ import { Breadcrumb } from "./Breadcrumb";
 import { ActionBar } from "./ActionBar";
 import { ThemeToggle } from "./ThemeToggle";
 import { DocsContent } from "./content/DocsContent";
-import { BookOpen, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
+import { Logo } from "./Logo";
 import "./index.css";
 
 export function App() {
@@ -26,8 +27,8 @@ export function App() {
           </button>
 
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-              <BookOpen size={15} className="text-primary" />
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+              <Logo size={18} />
             </div>
             <span className="text-sm font-semibold hidden sm:inline">Dhukuti Protocol</span>
           </div>
