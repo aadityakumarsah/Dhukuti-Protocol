@@ -2,14 +2,14 @@
 seeds = false
 skip-lint = false
 
-[programs.localnet]
-dhukuti = "3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt"
+[programs.devnet]
+dhukuti = "egyrA1EJRsr2b7QbciVXX78U3TkPy8GQ9dTDJQHPHvo"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "Devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
