@@ -1,0 +1,46 @@
+name: Deploy Solana Program to Devnet
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Install Anchor CLI
+        run: |
+          cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+          avm install 0.31.1
+          avm use 0.31.1
+          echo "$HOME/.avm/bin" >> $GITHUB_PATH
+
+      - name: Write keypairs
+        run: |
+          mkdir -p target/deploy ~/.config/solana
+          echo '${{ secrets.PROGRAM_KEYPAIR }}' > target/deploy/dhukuti-keypair.json
+          echo '${{ secrets.DEPLOYER_KEYPAIR }}' > ~/.config/solana/id.json
+          solana config set --url devnet
+
+      - name: Build program
+        run: anchor build
+
+      - name: Deploy to devnet
+        run: anchor deploy --provider.cluster devnet
+
+      - name: Output program ID
+        run: |
+          PROGRAM_ID=$(solana address --keypair target/deploy/dhukuti-keypair.json)
+          echo "=== DEPLOYED PROGRAM ID ==="
+          echo $PROGRAM_ID
+          echo "=== ADD TO VERCEL ==="
+          echo "NEXT_PUBLIC_DHUKUTI_PROGRAM_ID=$PROGRAM_ID"
