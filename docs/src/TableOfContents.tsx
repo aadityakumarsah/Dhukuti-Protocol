@@ -48,17 +48,14 @@ export function TableOfContents() {
           <a
             key={h.id}
             href={`#${h.id}`}
-            className={`relative block text-sm py-1 pr-3 transition-all duration-150 ${
+            className={`toc-link relative block text-sm py-1 pr-3 transition-all duration-200 ${
               h.level === 3 ? "pl-5" : "pl-3"
             } ${
               activeId === h.id
-                ? "text-primary font-medium"
+                ? "active text-primary font-medium"
                 : "text-muted-foreground/60 hover:text-foreground/80"
             }`}
           >
-            {activeId === h.id && (
-              <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-primary rounded-full" />
-            )}
             {h.text}
           </a>
         ))}

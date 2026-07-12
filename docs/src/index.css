@@ -12,40 +12,68 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animations */
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.3); }
+
+/* ── Animations ── */
 @keyframes slide-in-from-left {
   from { transform: translateX(-100%); }
   to { transform: translateX(0); }
 }
+.animate-in { animation: slide-in-from-left 0.25s ease-out; }
 
-.animate-in {
-  animation: slide-in-from-left 0.2s ease-out;
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 3px;
+@keyframes border-glow {
+  0%, 100% { border-color: hsl(var(--primary) / 0.2); box-shadow: 0 0 0px hsl(var(--primary) / 0); }
+  50% { border-color: hsl(var(--primary) / 0.5); box-shadow: 0 0 12px hsl(var(--primary) / 0.08); }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.3);
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-/* Prose custom styles */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Prose base ── */
 .prose-custom {
   color: hsl(var(--foreground));
 }
 
+.prose-custom > * {
+  animation: fade-in-up 0.4s ease-out both;
+}
+
+.prose-custom > *:nth-child(1) { animation-delay: 0s; }
+.prose-custom > *:nth-child(2) { animation-delay: 0.03s; }
+.prose-custom > *:nth-child(3) { animation-delay: 0.06s; }
+.prose-custom > *:nth-child(4) { animation-delay: 0.09s; }
+.prose-custom > *:nth-child(5) { animation-delay: 0.12s; }
+.prose-custom > *:nth-child(6) { animation-delay: 0.15s; }
+.prose-custom > *:nth-child(7) { animation-delay: 0.18s; }
+.prose-custom > *:nth-child(8) { animation-delay: 0.21s; }
+
+/* ── Headings ── */
 .prose-custom h1 {
   font-size: 2.25rem;
   font-weight: 800;
@@ -53,6 +81,10 @@ body {
   line-height: 1.2;
   margin-bottom: 1rem;
   margin-top: 0;
+  background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--primary) / 0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .prose-custom h2 {
@@ -65,11 +97,21 @@ body {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid hsl(var(--border) / 0.6);
   scroll-margin-top: 80px;
+  position: relative;
 }
 
-.prose-custom h2:first-of-type {
-  margin-top: 0;
+.prose-custom h2::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, hsl(var(--primary)), transparent);
+  border-radius: 1px;
 }
+
+.prose-custom h2:first-of-type { margin-top: 0; }
 
 .prose-custom h3 {
   font-size: 1.125rem;
@@ -78,20 +120,19 @@ body {
   margin-top: 2rem;
   margin-bottom: 0.5rem;
   scroll-margin-top: 80px;
+  position: relative;
 }
 
-.prose-custom h4 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin: 0;
-}
+.prose-custom h4 { font-size: 0.9rem; font-weight: 600; margin: 0; }
 
+/* ── Paragraphs ── */
 .prose-custom p {
   margin-bottom: 1rem;
   line-height: 1.75;
   color: hsl(var(--muted-foreground));
 }
 
+/* ── Lists ── */
 .prose-custom ul,
 .prose-custom ol {
   margin-bottom: 1.25rem;
@@ -102,32 +143,53 @@ body {
 .prose-custom li {
   margin-bottom: 0.35rem;
   color: hsl(var(--muted-foreground));
+  animation: slide-in-right 0.3s ease-out both;
 }
 
-.prose-custom li strong {
-  color: hsl(var(--foreground));
-}
+.prose-custom li:nth-child(1) { animation-delay: 0.02s; }
+.prose-custom li:nth-child(2) { animation-delay: 0.04s; }
+.prose-custom li:nth-child(3) { animation-delay: 0.06s; }
+.prose-custom li:nth-child(4) { animation-delay: 0.08s; }
+.prose-custom li:nth-child(5) { animation-delay: 0.1s; }
+.prose-custom li:nth-child(6) { animation-delay: 0.12s; }
+.prose-custom li:nth-child(7) { animation-delay: 0.14s; }
+.prose-custom li:nth-child(8) { animation-delay: 0.16s; }
 
-.prose-custom li::marker {
-  color: hsl(var(--primary) / 0.5);
-}
+.prose-custom li strong { color: hsl(var(--foreground)); }
+.prose-custom li::marker { color: hsl(var(--primary) / 0.5); }
 
+/* ── Links with animated underline ── */
 .prose-custom a {
   color: hsl(var(--primary));
   text-decoration: none;
-  border-bottom: 1px solid hsl(var(--primary) / 0.3);
-  transition: border-color 0.15s;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.prose-custom a::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.3));
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 1px;
+}
+
+.prose-custom a:hover::after {
+  width: 100%;
 }
 
 .prose-custom a:hover {
-  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
 }
 
-.prose-custom strong {
-  color: hsl(var(--foreground));
-}
+/* ── Strong ── */
+.prose-custom strong { color: hsl(var(--foreground)); }
 
-/* Code blocks */
+/* ── Code blocks ── */
 .prose-custom pre {
   margin: 1.25rem 0;
   padding: 1rem 1.25rem;
@@ -137,11 +199,17 @@ body {
   overflow-x: auto;
   font-size: 0.8rem;
   line-height: 1.6;
+  position: relative;
+  animation: border-glow 4s ease-in-out infinite;
+  transition: transform 0.2s, box-shadow 0.3s;
 }
 
-.dark .prose-custom pre {
-  background: hsl(240 10% 3.9%);
+.prose-custom pre:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px hsl(0 0% 0% / 0.15);
 }
+
+.dark .prose-custom pre { background: hsl(240 10% 3.9%); }
 
 .prose-custom pre code {
   background: none;
@@ -157,11 +225,17 @@ body {
   padding: 0.15em 0.4em;
   border-radius: 5px;
   background: hsl(var(--muted));
-  color: hsl(var(--foreground));
+  color: hsl(var(--primary));
   border: 1px solid hsl(var(--border) / 0.4);
+  transition: background 0.2s, border-color 0.2s;
 }
 
-/* Tables */
+.prose-custom code:hover {
+  background: hsl(var(--primary) / 0.08);
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+/* ── Tables ── */
 .prose-custom table {
   width: 100%;
   border-collapse: separate;
@@ -171,11 +245,10 @@ body {
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid hsl(var(--border));
+  animation: scale-in 0.3s ease-out;
 }
 
-.prose-custom thead {
-  background: hsl(var(--muted));
-}
+.prose-custom thead { background: hsl(var(--muted)); }
 
 .prose-custom th {
   text-align: left;
@@ -192,31 +265,51 @@ body {
   padding: 0.65rem 0.85rem;
   border-bottom: 1px solid hsl(var(--border) / 0.5);
   color: hsl(var(--muted-foreground));
+  transition: background 0.15s;
 }
 
-.prose-custom tbody tr:last-child td {
-  border-bottom: none;
-}
+.prose-custom tbody tr:last-child td { border-bottom: none; }
 
 .prose-custom tbody tr {
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.2s;
 }
 
 .prose-custom tbody tr:hover {
   background: hsl(var(--muted) / 0.3);
 }
 
+.prose-custom tbody tr:active {
+  transform: scale(0.995);
+}
+
 .prose-custom td:first-child,
-.prose-custom th:first-child {
-  padding-left: 1rem;
+.prose-custom th:first-child { padding-left: 1rem; }
+
+/* ── Cards grid ── */
+.prose-custom .grid { margin: 1.5rem 0; }
+
+.prose-custom .grid > div {
+  animation: fade-in-up 0.4s ease-out both;
+  transition: transform 0.2s, box-shadow 0.3s;
+  cursor: default;
 }
 
-/* Cards grid */
-.prose-custom .grid {
-  margin: 1.5rem 0;
+.prose-custom .grid > div:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px hsl(0 0% 0% / 0.08);
+  border-color: hsl(var(--primary) / 0.3);
 }
 
-/* Blockquote */
+.prose-custom .grid > div:nth-child(1) { animation-delay: 0s; }
+.prose-custom .grid > div:nth-child(2) { animation-delay: 0.05s; }
+.prose-custom .grid > div:nth-child(3) { animation-delay: 0.1s; }
+.prose-custom .grid > div:nth-child(4) { animation-delay: 0.15s; }
+.prose-custom .grid > div:nth-child(5) { animation-delay: 0.2s; }
+.prose-custom .grid > div:nth-child(6) { animation-delay: 0.25s; }
+.prose-custom .grid > div:nth-child(7) { animation-delay: 0.3s; }
+.prose-custom .grid > div:nth-child(8) { animation-delay: 0.35s; }
+
+/* ── Blockquote ── */
 .prose-custom blockquote {
   border-left: 3px solid hsl(var(--primary));
   padding: 0.75rem 1rem;
@@ -225,18 +318,44 @@ body {
   border-radius: 0 8px 8px 0;
   color: hsl(var(--muted-foreground));
   font-size: 0.9rem;
+  position: relative;
+  overflow: hidden;
 }
 
-/* State machine diagram */
+.prose-custom blockquote::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.03), transparent);
+  pointer-events: none;
+}
+
+/* ── State machine diagram ── */
 .prose-custom .bg-muted.rounded-lg.p-4 {
   font-family: "SF Mono", "Fira Code", monospace;
   font-size: 0.85rem;
   line-height: 1.8;
   text-align: center;
   border: 1px solid hsl(var(--border) / 0.5);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Smooth anchor hover */
+.prose-custom .bg-muted.rounded-lg.p-4::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.03), transparent);
+  animation: shimmer 6s ease-in-out infinite;
+}
+
+/* ── Heading anchor hover ── */
 .prose-custom h2:hover::after,
 .prose-custom h3:hover::after {
   content: "#";
@@ -244,30 +363,73 @@ body {
   font-size: 0.7em;
   color: hsl(var(--primary) / 0.5);
   font-weight: 400;
+  animation: fade-in 0.2s ease-out;
 }
 
-/* Mobile */
+/* ── Inline code in headings ── */
+.prose-custom h2 code,
+.prose-custom h3 code {
+  font-size: 0.85em;
+}
+
+/* ── Header progress bar ── */
+header::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, hsl(var(--primary) / 0.5), hsl(var(--primary) / 0.1), transparent);
+  animation: header-shimmer 4s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+@keyframes header-shimmer {
+  0% { background-position: -200% 0; width: 30%; }
+  50% { background-position: 200% 0; width: 60%; }
+  100% { background-position: -200% 0; width: 30%; }
+}
+
+/* ── TOC link active indicator ── */
+.toc-link {
+  transition: all 0.2s;
+}
+
+.toc-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: hsl(var(--primary));
+  border-radius: 1px;
+  transform: scaleY(0);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.toc-link.active::before {
+  transform: scaleY(1);
+}
+
+/* ── Selection ── */
+::selection {
+  background: hsl(var(--primary) / 0.2);
+  color: hsl(var(--foreground));
+}
+
+/* ── Footnotes / small text ── */
+.prose-custom .text-muted-foreground {
+  transition: color 0.2s;
+}
+
+/* ── Mobile ── */
 @media (max-width: 640px) {
-  .prose-custom h1 {
-    font-size: 1.5rem;
-  }
-  .prose-custom h2 {
-    font-size: 1.2rem;
-    margin-top: 2rem;
-  }
-  .prose-custom h3 {
-    font-size: 1rem;
-  }
-  .prose-custom pre {
-    padding: 0.75rem;
-    font-size: 0.75rem;
-    border-radius: 8px;
-  }
-  .prose-custom table {
-    font-size: 0.75rem;
-  }
+  .prose-custom h1 { font-size: 1.5rem; }
+  .prose-custom h2 { font-size: 1.2rem; margin-top: 2rem; }
+  .prose-custom h3 { font-size: 1rem; }
+  .prose-custom pre { padding: 0.75rem; font-size: 0.75rem; border-radius: 8px; }
+  .prose-custom table { font-size: 0.75rem; }
   .prose-custom th,
-  .prose-custom td {
-    padding: 0.5rem 0.6rem;
-  }
+  .prose-custom td { padding: 0.5rem 0.6rem; }
 }
