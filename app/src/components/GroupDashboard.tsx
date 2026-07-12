@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Copy, ExternalLink, Play, Send } from "lucide-react";
+import { Activity, Copy, ExternalLink, Play, RefreshCw, Send } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 
@@ -68,7 +68,29 @@ export function GroupDashboard({ groupAddress }: Props) {
       <section className="panel large">
         <h3>Group Dashboard</h3>
         <p className="warning">Group not found on-chain.</p>
-        <p className="muted">Address: {groupAddress.toBase58().slice(0, 12)}...</p>
+        <p className="muted" style={{ wordBreak: "break-all", fontSize: "0.78rem" }}>
+          Address: {groupAddress.toBase58()}
+        </p>
+        <div className="button-row">
+          <a
+            className="secondary-button"
+            href={`https://explorer.solana.com/address/${groupAddress.toBase58()}?cluster=devnet`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "none" }}
+          >
+            <ExternalLink size={17} />
+            Check on Explorer
+          </a>
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={() => { setGroup("loading"); getGroup(groupAddress).then(setGroup); }}
+          >
+            <RefreshCw size={17} />
+            Retry
+          </button>
+        </div>
       </section>
     );
   }

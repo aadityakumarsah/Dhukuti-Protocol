@@ -147,7 +147,9 @@ export function useDhukuti() {
         vault,
         systemProgram: SystemProgram.programId
       })
-      .rpc();
+      .rpc({ commitment: "confirmed" });
+
+    await connection.confirmTransaction(sig, "confirmed");
 
     return { signature: sig, groupAddress: group };
   }

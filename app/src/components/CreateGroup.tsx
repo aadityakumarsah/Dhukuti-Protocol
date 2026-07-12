@@ -1,10 +1,10 @@
 "use client";
 
-import { Plus, Copy } from "lucide-react";
+import { ExternalLink, Plus, Copy } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
 import { FormEvent, useState } from "react";
 
-import { useDhukuti } from "@/hooks/useDhukuti";
+import { DHUKUTI_PROGRAM_ID, useDhukuti } from "@/hooks/useDhukuti";
 
 type Props = {
   onGroupCreated?: (address: PublicKey) => void;
@@ -14,6 +14,7 @@ export function CreateGroup({ onGroupCreated }: Props) {
   const { createGroup, deriveGroup, connected, wallet } = useDhukuti();
   const [status, setStatus] = useState("");
   const [createdGroup, setCreatedGroup] = useState<PublicKey | null>(null);
+  const [txSig, setTxSig] = useState("");
   const [copied, setCopied] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -21,6 +22,7 @@ export function CreateGroup({ onGroupCreated }: Props) {
     const form = new FormData(event.currentTarget);
     setStatus("Creating group...");
     setCreatedGroup(null);
+    setTxSig("");
 
     try {
       const { signature, groupAddress } = await createGroup({
@@ -31,7 +33,8 @@ export function CreateGroup({ onGroupCreated }: Props) {
         allocationMethod: String(form.get("allocationMethod")) as "vote" | "random" | "auction",
         protocolFeeBps: Number(form.get("protocolFeeBps"))
       });
-      setStatus(`Created: ${signature.slice(0, 10)}...`);
+      setTxSig(signature);
+      setStatus("Group created successfully!");
       setCreatedGroup(groupAddress);
       onGroupCreated?.(groupAddress);
     } catch (error) {
@@ -100,9 +103,23 @@ export function CreateGroup({ onGroupCreated }: Props) {
       </div>
       {status ? <p className={createdGroup ? "" : "warning"}>{status}</p> : null}
       {createdGroup && (
-        <p style={{ fontSize: "0.78rem", marginTop: 8, wordBreak: "break-all", color: "var(--muted)" }}>
-          Group: {createdGroup.toBase58()}
-        </p>
+        <>
+          <p style={{ fontSize: "0.78rem", marginTop: 8, wordBreak: "break-all", color: "var(--muted)" }}>
+            Group: {createdGroup.toBase58()}
+          </p>
+          {txSig && (
+            <a
+              href={`https://explorer.solana.com/tx/${txSig}?cluster=devnet`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="secondary-button"
+              style={{ textDecoration: "none", marginTop: 8, display: "inline-flex" }}
+            >
+              <ExternalLink size={15} />
+              View transaction
+            </a>
+          )}
+        </>
       )}
     </form>
   );
