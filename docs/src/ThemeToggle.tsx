@@ -11,10 +11,23 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setDark((d) => !d)}
-      className="p-2 rounded-lg hover:bg-sidebar-accent transition-colors"
+      className="relative w-9 h-9 flex items-center justify-center rounded-lg border border-border hover:bg-accent transition-all duration-200 group"
       aria-label="Toggle theme"
     >
-      {dark ? <Sun size={18} /> : <Moon size={18} />}
+      <div className="relative w-4 h-4">
+        <Sun
+          size={16}
+          className={`absolute inset-0 transition-all duration-300 ${
+            dark ? "opacity-0 rotate-90 scale-0" : "opacity-100 rotate-0 scale-100"
+          }`}
+        />
+        <Moon
+          size={16}
+          className={`absolute inset-0 transition-all duration-300 ${
+            dark ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-0"
+          }`}
+        />
+      </div>
     </button>
   );
 }

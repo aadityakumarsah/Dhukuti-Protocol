@@ -1,4 +1,4 @@
-import { Copy, ChevronDown, Check } from "lucide-react";
+import { Copy, Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 export function ActionBar() {
@@ -12,17 +12,24 @@ export function ActionBar() {
   }
 
   return (
-    <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border">
+    <div className="flex items-center gap-2 mb-8 pb-5 border-b border-border/50">
       <button
         onClick={handleCopy}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border hover:bg-accent transition-colors"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-border/60 hover:bg-accent hover:border-border transition-all duration-150 text-muted-foreground hover:text-foreground"
       >
-        {copied ? <Check size={14} /> : <Copy size={14} />}
-        {copied ? "Copied!" : "Copy Markdown"}
+        {copied ? (
+          <>
+            <Check size={13} className="text-emerald-500" />
+            Copied!
+          </>
+        ) : (
+          <>
+            <Copy size={13} />
+            Copy page
+          </>
+        )}
       </button>
-      <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border hover:bg-accent transition-colors ml-auto">
-        Open <ChevronDown size={14} />
-      </button>
+      <span className="text-[11px] text-muted-foreground/40 ml-auto">v0.1.0</span>
     </div>
   );
 }
