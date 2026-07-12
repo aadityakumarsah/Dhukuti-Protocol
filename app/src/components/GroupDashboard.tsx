@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Copy, ExternalLink } from "lucide-react";
+import { Activity, Copy, ExternalLink, Play, Send } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 
@@ -16,9 +16,10 @@ type Props = {
 };
 
 export function GroupDashboard({ groupAddress }: Props) {
-  const { getGroup, connected } = useDhukuti();
+  const { getGroup, connected, wallet, activateGroup, distribute } = useDhukuti();
   const [group, setGroup] = useState<DhukutiGroupData | null | "loading">(null);
   const [copied, setCopied] = useState(false);
+  const [actionStatus, setActionStatus] = useState("");
 
   useEffect(() => {
     if (!groupAddress || !connected) {
@@ -74,6 +75,42 @@ export function GroupDashboard({ groupAddress }: Props) {
 
   const poolLamports = Number(group.contributionAmount.toString()) * group.currentMembers;
   const poolSoFar = Number(group.totalContributedThisCycle.toString());
+  const isCreator = wallet?.publicKey.equals(group.creator);
+  const isForming = getEnumKey(group.status) === "Forming";
+  const isActive = getEnumKey(group.status) === "Active";
+  const allContributed = group.contributionsThisCycle >= group.currentMembers;
+
+  async function handleActivate() {
+    if (!groupAddress) return;
+    setActionStatus("Activating group...");
+    try {
+      const sig = await activateGroup(groupAddress);
+      setActionStatus(`Activated: ${sig.slice(0, 10)}...`);
+      const data = await getGroup(groupAddress);
+      setGroup(data);
+    } catch (e) {
+      setActionStatus(e instanceof Error ? e.message : "Activation failed.");
+    }
+  }
+
+  async function handleDistribute() {
+    if (!group || group === "loading") return;
+    const recipient = group.voteLeader;
+    if (recipient.equals(PublicKey.default)) {
+      setActionStatus("No vote leader yet. Vote first.");
+      return;
+    }
+    if (!groupAddress) return;
+    setActionStatus("Distributing pool...");
+    try {
+      const sig = await distribute(groupAddress, recipient);
+      setActionStatus(`Distributed: ${sig.slice(0, 10)}...`);
+      const data = await getGroup(groupAddress);
+      setGroup(data);
+    } catch (e) {
+      setActionStatus(e instanceof Error ? e.message : "Distribution failed.");
+    }
+  }
 
   return (
     <section className="panel large">
@@ -94,6 +131,10 @@ export function GroupDashboard({ groupAddress }: Props) {
         <div className="data-row">
           <span>Contribution</span>
           <strong>{fromLamports(group.contributionAmount)} SOL</strong>
+        </div>
+        <div className="data-row">
+          <span>Deposit</span>
+          <strong>{fromLamports(group.securityDeposit)} SOL</strong>
         </div>
         <div className="data-row">
           <span>Pool (full)</span>
@@ -129,7 +170,20 @@ export function GroupDashboard({ groupAddress }: Props) {
           <Activity size={17} />
           Refresh
         </button>
+        {isCreator && isForming && (
+          <button className="primary-button" type="button" onClick={handleActivate}>
+            <Play size={17} />
+            Activate
+          </button>
+        )}
+        {isActive && allContributed && (
+          <button className="primary-button" type="button" onClick={handleDistribute}>
+            <Send size={17} />
+            Distribute
+          </button>
+        )}
       </div>
+      {actionStatus ? <p className="warning" style={{ marginTop: 12 }}>{actionStatus}</p> : null}
     </section>
   );
 }

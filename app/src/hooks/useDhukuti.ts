@@ -207,6 +207,35 @@ export function useDhukuti() {
       .rpc();
   }
 
+  async function activateGroup(group: PublicKey) {
+    if (!program || !wallet) throw new Error("Connect a wallet first.");
+
+    return program.methods
+      .activateGroup()
+      .accounts({
+        creator: wallet.publicKey,
+        group,
+      })
+      .rpc();
+  }
+
+  async function distribute(group: PublicKey, recipient: PublicKey) {
+    if (!program || !wallet) throw new Error("Connect a wallet first.");
+    const [recipientMember] = deriveMember(group, recipient);
+    const [vault] = deriveVault(group);
+
+    return program.methods
+      .distribute()
+      .accounts({
+        authority: wallet.publicKey,
+        group,
+        recipientMember,
+        recipient,
+        vault,
+      })
+      .rpc();
+  }
+
   async function claimReputation(group: PublicKey) {
     if (!program || !wallet) throw new Error("Connect a wallet first.");
     const [member] = deriveMember(group, wallet.publicKey);
@@ -237,7 +266,9 @@ export function useDhukuti() {
     getMember,
     createGroup,
     joinGroup,
+    activateGroup,
     contribute,
+    distribute,
     votePayout,
     claimReputation
   };
