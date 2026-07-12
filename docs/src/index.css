@@ -414,7 +414,17 @@ header::after {
 
 /* ── Selection ── */
 ::selection {
-  background: hsl(var(--primary) / 0.2);
+  background: hsl(222 89% 65% / 0.3);
+  color: hsl(var(--foreground));
+}
+
+.dark ::selection {
+  background: hsl(222 89% 65% / 0.25);
+  color: hsl(var(--foreground));
+}
+
+::-moz-selection {
+  background: hsl(222 89% 65% / 0.3);
   color: hsl(var(--foreground));
 }
 
