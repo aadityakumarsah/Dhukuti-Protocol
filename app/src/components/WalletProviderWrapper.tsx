@@ -26,9 +26,45 @@ function AutoReconnect() {
   return null;
 }
 
+function NetworkBadge() {
+  const rpc = process.env.NEXT_PUBLIC_SOLANA_RPC ?? "";
+  const isDevnet = rpc.includes("devnet");
+  const isMainnet = rpc.includes("mainnet");
+  const isLocal = rpc.includes("127.0.0.1") || rpc.includes("localhost");
+  const label = isDevnet ? "Devnet" : isMainnet ? "Mainnet" : isLocal ? "Localnet" : "Custom";
+  const color = isDevnet ? "#0f766e" : isMainnet ? "#b45309" : "#657067";
+
+  return (
+    <span
+      style={{
+        fontSize: "0.72rem",
+        fontWeight: 700,
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
+        color,
+        border: `1px solid ${color}`,
+        borderRadius: 6,
+        padding: "3px 8px",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
 function HomeContent() {
-  const { wallet, deriveGroup } = useDhukuti();
+  const { connection, wallet, deriveGroup } = useDhukuti();
   const [selectedGroup, setSelectedGroup] = useState<PublicKey | null>(null);
+  const [networkName, setNetworkName] = useState("");
+
+  useEffect(() => {
+    connection.getGenesisHash().then((hash) => {
+      if (hash === "EtWTRABZaYZqjoPVz3VQe7hMCrNzdhrbNH4YBL3zfXp") setNetworkName("Devnet");
+      else if (hash === "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d") setNetworkName("Mainnet");
+      else setNetworkName("Other");
+    }).catch(() => setNetworkName("Unknown"));
+  }, [connection]);
 
   const ownGroup = wallet ? deriveGroup(wallet.publicKey)[0] : null;
 
@@ -54,9 +90,38 @@ function HomeContent() {
               My group
             </button>
           )}
+          <NetworkBadge />
           <WalletMultiButton />
         </div>
       </header>
+
+      {networkName === "Mainnet" && (
+        <div style={{
+          background: "#fef3c7",
+          borderBottom: "1px solid #f59e0b",
+          padding: "10px clamp(18px, 5vw, 64px)",
+          fontSize: "0.85rem",
+          color: "#92400e",
+          textAlign: "center",
+        }}>
+          ⚠️ App is on <strong>Devnet</strong> but RPC is pointing to Mainnet.
+          Set <code>NEXT_PUBLIC_SOLANA_RPC</code> to a Devnet endpoint.
+        </div>
+      )}
+
+      {wallet && networkName && (
+        <div style={{
+          background: "#f0fdf4",
+          borderBottom: "1px solid #86efac",
+          padding: "6px clamp(18px, 5vw, 64px)",
+          fontSize: "0.8rem",
+          color: "#166534",
+          textAlign: "center",
+        }}>
+          Connected to <strong>{networkName}</strong>.
+          Make sure your wallet is set to the same network.
+        </div>
+      )}
 
       <section className="hero">
         <div className="hero-copy">
