@@ -1,11 +1,11 @@
 "use client";
 
-import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
+import { ConnectionProvider, WalletProvider, useWallet } from "@solana/wallet-adapter-react";
 import { WalletModalProvider, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { PublicKey } from "@solana/web3.js";
 import { ShieldCheck, UsersRound, Vote, WalletCards } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ContributionPanel } from "@/components/ContributionPanel";
 import { CreateGroup } from "@/components/CreateGroup";
@@ -13,6 +13,18 @@ import { GroupDashboard } from "@/components/GroupDashboard";
 import { ReputationCard } from "@/components/ReputationCard";
 import { VotingPanel } from "@/components/VotingPanel";
 import { useDhukuti } from "@/hooks/useDhukuti";
+
+function AutoReconnect() {
+  const { wallet, connect, connected } = useWallet();
+
+  useEffect(() => {
+    if (!connected && wallet) {
+      connect().catch(() => {});
+    }
+  }, [wallet, connect, connected]);
+
+  return null;
+}
 
 function HomeContent() {
   const { wallet, deriveGroup } = useDhukuti();
@@ -97,6 +109,7 @@ export default function WalletProviderWrapper() {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
+          <AutoReconnect />
           <HomeContent />
         </WalletModalProvider>
       </WalletProvider>
