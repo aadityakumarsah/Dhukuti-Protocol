@@ -8,7 +8,7 @@ import { useMemo } from "react";
 import dhukutiIdl from "@/idl/dhukuti.json";
 
 export const DHUKUTI_PROGRAM_ID = new PublicKey(
-  process.env.NEXT_PUBLIC_DHUKUTI_PROGRAM_ID ?? "3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt"
+  process.env.NEXT_PUBLIC_DHUKUTI_PROGRAM_ID ?? "egyrA1EJRsr2b7QbciVXX78U3TkPy8GQ9dTDJQHPHvo"
 );
 
 type EnumObject = { [key: string]: {} };

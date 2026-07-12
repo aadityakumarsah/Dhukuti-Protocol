@@ -6,7 +6,7 @@ pub mod state;
 
 use instructions::*;
 
-declare_id!("3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt");
+declare_id!("egyrA1EJRsr2b7QbciVXX78U3TkPy8GQ9dTDJQHPHvo");
 
 #[program]
 pub mod dhukuti {

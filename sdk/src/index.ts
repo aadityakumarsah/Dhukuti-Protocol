@@ -1,6 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 
-export const DHUKUTI_PROGRAM_ID = new PublicKey("3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt");
+export const DHUKUTI_PROGRAM_ID = new PublicKey("egyrA1EJRsr2b7QbciVXX78U3TkPy8GQ9dTDJQHPHvo");
 
 export function deriveGroupAddress(creator: PublicKey, programId = DHUKUTI_PROGRAM_ID) {
   return PublicKey.findProgramAddressSync([Buffer.from("group"), creator.toBuffer()], programId);
