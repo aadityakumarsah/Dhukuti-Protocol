@@ -3,16 +3,27 @@
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { WalletModalProvider, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
+import { PublicKey } from "@solana/web3.js";
 import { ShieldCheck, UsersRound, Vote, WalletCards } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { ContributionPanel } from "@/components/ContributionPanel";
 import { CreateGroup } from "@/components/CreateGroup";
 import { GroupDashboard } from "@/components/GroupDashboard";
 import { ReputationCard } from "@/components/ReputationCard";
 import { VotingPanel } from "@/components/VotingPanel";
+import { useDhukuti } from "@/hooks/useDhukuti";
 
 function HomeContent() {
+  const { wallet, deriveGroup } = useDhukuti();
+  const [selectedGroup, setSelectedGroup] = useState<PublicKey | null>(null);
+
+  const ownGroup = wallet ? deriveGroup(wallet.publicKey)[0] : null;
+
+  function handleGroupCreated(address: PublicKey) {
+    setSelectedGroup(address);
+  }
+
   return (
     <main>
       <header className="topbar">
@@ -20,7 +31,19 @@ function HomeContent() {
           <p className="eyebrow">Solana ROSCA protocol</p>
           <h1>Dhukuti Protocol</h1>
         </div>
-        <WalletMultiButton />
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {ownGroup && selectedGroup?.toBase58() !== ownGroup.toBase58() && (
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => setSelectedGroup(ownGroup)}
+              style={{ fontSize: "0.78rem", padding: "0 10px", minHeight: 36 }}
+            >
+              My group
+            </button>
+          )}
+          <WalletMultiButton />
+        </div>
       </header>
 
       <section className="hero">
@@ -56,11 +79,11 @@ function HomeContent() {
       </section>
 
       <section className="workspace">
-        <CreateGroup />
-        <GroupDashboard />
-        <ContributionPanel />
-        <VotingPanel />
-        <ReputationCard />
+        <CreateGroup onGroupCreated={handleGroupCreated} />
+        <GroupDashboard groupAddress={selectedGroup} />
+        <ContributionPanel groupAddress={selectedGroup} />
+        <VotingPanel groupAddress={selectedGroup} />
+        <ReputationCard groupAddress={selectedGroup} />
       </section>
     </main>
   );

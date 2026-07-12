@@ -14,10 +14,14 @@
     "@solana/wallet-adapter-react-ui": "^0.9.38",
     "@solana/wallet-adapter-wallets": "^0.19.36",
     "@solana/web3.js": "^1.98.2",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
     "lucide-react": "^0.468.0",
     "next": "^15.3.4",
+    "process": "^0.11.10",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "stream-browserify": "^3.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.32",

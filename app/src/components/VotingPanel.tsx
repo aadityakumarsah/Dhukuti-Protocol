@@ -2,21 +2,50 @@
 
 import { Vote } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 import { useDhukuti } from "@/hooks/useDhukuti";
 
-export function VotingPanel() {
+type Props = {
+  groupAddress?: PublicKey | null;
+};
+
+export function VotingPanel({ groupAddress }: Props) {
   const { votePayout, connected } = useDhukuti();
   const [status, setStatus] = useState("");
+  const [groupInput, setGroupInput] = useState("");
+
+  useEffect(() => {
+    if (groupAddress) {
+      setGroupInput(groupAddress.toBase58());
+    }
+  }, [groupAddress]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const groupRaw = form.get("group") as string;
+    const nomineeRaw = form.get("nominee") as string;
+
+    if (!groupRaw.trim() || !nomineeRaw.trim()) {
+      setStatus("Enter both group address and nominee.");
+      return;
+    }
+
+    let group: PublicKey;
+    let nominee: PublicKey;
+    try {
+      group = new PublicKey(groupRaw.trim());
+      nominee = new PublicKey(nomineeRaw.trim());
+    } catch {
+      setStatus("Invalid public key format.");
+      return;
+    }
+
     setStatus("Submitting vote...");
 
     try {
-      const signature = await votePayout(new PublicKey(String(form.get("group"))), new PublicKey(String(form.get("nominee"))));
+      const signature = await votePayout(group, nominee);
       setStatus(`Voted: ${signature.slice(0, 10)}...`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Vote failed.");
@@ -28,7 +57,12 @@ export function VotingPanel() {
       <h3>Janamat Vote</h3>
       <label>
         Group address
-        <input name="group" placeholder="Paste group PDA" />
+        <input
+          name="group"
+          placeholder="Paste group PDA"
+          value={groupInput}
+          onChange={(e) => setGroupInput(e.target.value)}
+        />
       </label>
       <label>
         Payout nominee

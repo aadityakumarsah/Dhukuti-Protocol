@@ -11,11 +11,50 @@ export const DHUKUTI_PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_DHUKUTI_PROGRAM_ID ?? "3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt"
 );
 
+type EnumObject = { [key: string]: {} };
+
+export type DhukutiGroupData = {
+  creator: PublicKey;
+  vault: PublicKey;
+  contributionAmount: BN;
+  securityDeposit: BN;
+  maxMembers: number;
+  currentMembers: number;
+  cyclePeriod: BN;
+  cycleStartedAt: BN;
+  currentCycle: number;
+  allocationMethod: EnumObject;
+  status: EnumObject;
+  protocolFeeBps: number;
+  totalContributedThisCycle: BN;
+  contributionsThisCycle: number;
+  currentRecipient: PublicKey;
+  voteLeader: PublicKey;
+  voteLeaderCount: number;
+};
+
+export type MemberData = {
+  group: PublicKey;
+  wallet: PublicKey;
+  cyclesContributed: number;
+  lastContributedCycle: number;
+  payoutReceived: boolean;
+  payoutCycle: number;
+  securityDeposit: BN;
+  isActive: boolean;
+  reputationScore: number;
+  reputationClaimed: boolean;
+};
+
 type DhukutiProgram = Program & {
   methods: Record<string, (...args: unknown[]) => { accounts: (accounts: Record<string, PublicKey>) => { rpc: () => Promise<string> } }>;
   account: {
     dhukutiGroup: {
-      fetch: (address: PublicKey) => Promise<{ currentCycle: number }>;
+      fetch: (address: PublicKey) => Promise<DhukutiGroupData>;
+      all: () => Promise<{ publicKey: PublicKey; account: DhukutiGroupData }[]>;
+    };
+    member: {
+      fetch: (address: PublicKey) => Promise<MemberData>;
     };
   };
 };
@@ -28,6 +67,22 @@ export type CreateGroupInput = {
   allocationMethod: "vote" | "random" | "auction";
   protocolFeeBps: number;
 };
+
+export function getEnumKey(obj: EnumObject): string {
+  return Object.keys(obj)[0];
+}
+
+export function formatStatus(status: EnumObject): string {
+  const key = getEnumKey(status);
+  return key.charAt(0).toUpperCase() + key.slice(1);
+}
+
+export function formatAllocation(method: EnumObject): string {
+  const key = getEnumKey(method);
+  if (key === "Vote") return "Janamat vote";
+  if (key === "Random") return "Random draw";
+  return "Auction";
+}
 
 export function useDhukuti() {
   const { connection } = useConnection();
@@ -53,13 +108,31 @@ export function useDhukuti() {
   const deriveReputation = (group: PublicKey, member: PublicKey) =>
     PublicKey.findProgramAddressSync([Buffer.from("reputation"), group.toBuffer(), member.toBuffer()], DHUKUTI_PROGRAM_ID);
 
+  async function getGroup(address: PublicKey): Promise<DhukutiGroupData | null> {
+    if (!program) return null;
+    try {
+      return await program.account.dhukutiGroup.fetch(address);
+    } catch {
+      return null;
+    }
+  }
+
+  async function getMember(address: PublicKey): Promise<MemberData | null> {
+    if (!program) return null;
+    try {
+      return await program.account.member.fetch(address);
+    } catch {
+      return null;
+    }
+  }
+
   async function createGroup(input: CreateGroupInput) {
     if (!program || !wallet) throw new Error("Connect a wallet first.");
     const [group] = deriveGroup(wallet.publicKey);
     const [vault] = deriveVault(group);
     const allocationMethod = { [input.allocationMethod]: {} };
 
-    return program.methods
+    const sig = await program.methods
       .createGroup(
         new BN(input.contributionSol * web3.LAMPORTS_PER_SOL),
         new BN(input.securityDepositSol * web3.LAMPORTS_PER_SOL),
@@ -75,6 +148,8 @@ export function useDhukuti() {
         systemProgram: SystemProgram.programId
       })
       .rpc();
+
+    return { signature: sig, groupAddress: group };
   }
 
   async function joinGroup(group: PublicKey) {
@@ -152,7 +227,14 @@ export function useDhukuti() {
   return {
     connected: Boolean(wallet),
     wallet,
+    connection,
+    program,
     deriveGroup,
+    deriveMember,
+    deriveVault,
+    deriveReputation,
+    getGroup,
+    getMember,
     createGroup,
     joinGroup,
     contribute,
