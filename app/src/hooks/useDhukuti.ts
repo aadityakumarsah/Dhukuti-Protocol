@@ -1,0 +1,160 @@
+"use client";
+
+import { AnchorProvider, BN, Program, setProvider, web3 } from "@coral-xyz/anchor";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { useMemo } from "react";
+
+export const DHUKUTI_PROGRAM_ID = new PublicKey(
+  process.env.NEXT_PUBLIC_DHUKUTI_PROGRAM_ID ?? "3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt"
+);
+
+type DhukutiProgram = Program & {
+  methods: Record<string, (...args: unknown[]) => { accounts: (accounts: Record<string, PublicKey>) => { rpc: () => Promise<string> } }>;
+};
+
+export type CreateGroupInput = {
+  contributionSol: number;
+  securityDepositSol: number;
+  maxMembers: number;
+  cycleDays: number;
+  allocationMethod: "vote" | "random" | "auction";
+  protocolFeeBps: number;
+};
+
+const placeholderIdl = {
+  address: DHUKUTI_PROGRAM_ID.toBase58(),
+  version: "0.1.0",
+  name: "dhukuti",
+  instructions: []
+};
+
+export function useDhukuti() {
+  const { connection } = useConnection();
+  const wallet = useAnchorWallet();
+
+  const provider = useMemo(() => {
+    if (!wallet) return null;
+    const anchorProvider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
+    setProvider(anchorProvider);
+    return anchorProvider;
+  }, [connection, wallet]);
+
+  const program = useMemo(() => {
+    if (!provider) return null;
+    return new Program(placeholderIdl, provider) as DhukutiProgram;
+  }, [provider]);
+
+  const deriveGroup = (creator: PublicKey) => PublicKey.findProgramAddressSync([Buffer.from("group"), creator.toBuffer()], DHUKUTI_PROGRAM_ID);
+  const deriveVault = (group: PublicKey) => PublicKey.findProgramAddressSync([Buffer.from("vault"), group.toBuffer()], DHUKUTI_PROGRAM_ID);
+  const deriveMember = (group: PublicKey, member: PublicKey) =>
+    PublicKey.findProgramAddressSync([Buffer.from("member"), group.toBuffer(), member.toBuffer()], DHUKUTI_PROGRAM_ID);
+  const deriveReputation = (group: PublicKey, member: PublicKey) =>
+    PublicKey.findProgramAddressSync([Buffer.from("reputation"), group.toBuffer(), member.toBuffer()], DHUKUTI_PROGRAM_ID);
+
+  async function createGroup(input: CreateGroupInput) {
+    if (!program || !wallet) throw new Error("Connect a wallet first.");
+    const [group] = deriveGroup(wallet.publicKey);
+    const [vault] = deriveVault(group);
+    const allocationMethod = { [input.allocationMethod]: {} };
+
+    return program.methods
+      .createGroup(
+        new BN(input.contributionSol * web3.LAMPORTS_PER_SOL),
+        new BN(input.securityDepositSol * web3.LAMPORTS_PER_SOL),
+        input.maxMembers,
+        new BN(input.cycleDays * 86_400),
+        allocationMethod,
+        input.protocolFeeBps
+      )
+      .accounts({
+        creator: wallet.publicKey,
+        group,
+        vault,
+        systemProgram: SystemProgram.programId
+      })
+      .rpc();
+  }
+
+  async function joinGroup(group: PublicKey) {
+    if (!program || !wallet) throw new Error("Connect a wallet first.");
+    const [member] = deriveMember(group, wallet.publicKey);
+    const [vault] = deriveVault(group);
+
+    return program.methods
+      .joinGroup()
+      .accounts({
+        wallet: wallet.publicKey,
+        group,
+        member,
+        vault,
+        systemProgram: SystemProgram.programId
+      })
+      .rpc();
+  }
+
+  async function contribute(group: PublicKey) {
+    if (!program || !wallet) throw new Error("Connect a wallet first.");
+    const [member] = deriveMember(group, wallet.publicKey);
+    const [vault] = deriveVault(group);
+
+    return program.methods
+      .contribute()
+      .accounts({
+        wallet: wallet.publicKey,
+        group,
+        member,
+        vault,
+        systemProgram: SystemProgram.programId
+      })
+      .rpc();
+  }
+
+  async function votePayout(group: PublicKey, nominee: PublicKey) {
+    if (!program || !wallet) throw new Error("Connect a wallet first.");
+    const [voterMember] = deriveMember(group, wallet.publicKey);
+    const voteRecord = PublicKey.findProgramAddressSync(
+      [Buffer.from("vote"), group.toBuffer(), Buffer.from([0]), wallet.publicKey.toBuffer()],
+      DHUKUTI_PROGRAM_ID
+    )[0];
+
+    return program.methods
+      .votePayout(nominee)
+      .accounts({
+        voter: wallet.publicKey,
+        group,
+        voterMember,
+        voteRecord,
+        systemProgram: SystemProgram.programId
+      })
+      .rpc();
+  }
+
+  async function claimReputation(group: PublicKey) {
+    if (!program || !wallet) throw new Error("Connect a wallet first.");
+    const [member] = deriveMember(group, wallet.publicKey);
+    const [attestation] = deriveReputation(group, wallet.publicKey);
+
+    return program.methods
+      .claimReputation()
+      .accounts({
+        wallet: wallet.publicKey,
+        group,
+        member,
+        attestation,
+        systemProgram: SystemProgram.programId
+      })
+      .rpc();
+  }
+
+  return {
+    connected: Boolean(wallet),
+    wallet,
+    deriveGroup,
+    createGroup,
+    joinGroup,
+    contribute,
+    votePayout,
+    claimReputation
+  };
+}

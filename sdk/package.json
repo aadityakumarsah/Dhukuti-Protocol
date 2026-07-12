@@ -1,0 +1,13 @@
+{
+  "name": "@dhukuti-protocol/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@solana/web3.js": "^1.98.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
