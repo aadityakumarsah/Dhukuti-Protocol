@@ -26,14 +26,8 @@ function AutoReconnect() {
   return null;
 }
 
-function NetworkBadge() {
-  const rpc = process.env.NEXT_PUBLIC_SOLANA_RPC ?? "";
-  const isDevnet = rpc.includes("devnet");
-  const isMainnet = rpc.includes("mainnet");
-  const isLocal = rpc.includes("127.0.0.1") || rpc.includes("localhost");
-  const label = isDevnet ? "Devnet" : isMainnet ? "Mainnet" : isLocal ? "Localnet" : "Custom";
-  const color = isDevnet ? "#0f766e" : isMainnet ? "#b45309" : "#657067";
-
+function NetworkBadge({ detected }: { detected: string }) {
+  const color = detected === "Devnet" ? "#0f766e" : detected === "Mainnet" ? "#b45309" : "#657067";
   return (
     <span
       style={{
@@ -48,7 +42,7 @@ function NetworkBadge() {
         whiteSpace: "nowrap",
       }}
     >
-      {label}
+      {detected || "..."}
     </span>
   );
 }
@@ -90,26 +84,12 @@ function HomeContent() {
               My group
             </button>
           )}
-          <NetworkBadge />
+          <NetworkBadge detected={networkName} />
           <WalletMultiButton />
         </div>
       </header>
 
-      {networkName === "Mainnet" && (
-        <div style={{
-          background: "#fef3c7",
-          borderBottom: "1px solid #f59e0b",
-          padding: "10px clamp(18px, 5vw, 64px)",
-          fontSize: "0.85rem",
-          color: "#92400e",
-          textAlign: "center",
-        }}>
-          ⚠️ App is on <strong>Devnet</strong> but RPC is pointing to Mainnet.
-          Set <code>NEXT_PUBLIC_SOLANA_RPC</code> to a Devnet endpoint.
-        </div>
-      )}
-
-      {wallet && networkName && (
+      {networkName && networkName !== "Unknown" && (
         <div style={{
           background: "#f0fdf4",
           borderBottom: "1px solid #86efac",
@@ -122,6 +102,8 @@ function HomeContent() {
           Make sure your wallet is set to the same network.
         </div>
       )}
+
+
 
       <section className="hero">
         <div className="hero-copy">
