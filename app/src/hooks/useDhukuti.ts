@@ -1,9 +1,11 @@
 "use client";
 
-import { AnchorProvider, BN, Program, setProvider, web3 } from "@coral-xyz/anchor";
+import { AnchorProvider, BN, Idl, Program, setProvider, web3 } from "@coral-xyz/anchor";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { useMemo } from "react";
+
+import dhukutiIdl from "@/idl/dhukuti.json";
 
 export const DHUKUTI_PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_DHUKUTI_PROGRAM_ID ?? "3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt"
@@ -11,6 +13,11 @@ export const DHUKUTI_PROGRAM_ID = new PublicKey(
 
 type DhukutiProgram = Program & {
   methods: Record<string, (...args: unknown[]) => { accounts: (accounts: Record<string, PublicKey>) => { rpc: () => Promise<string> } }>;
+  account: {
+    dhukutiGroup: {
+      fetch: (address: PublicKey) => Promise<{ currentCycle: number }>;
+    };
+  };
 };
 
 export type CreateGroupInput = {
@@ -20,13 +27,6 @@ export type CreateGroupInput = {
   cycleDays: number;
   allocationMethod: "vote" | "random" | "auction";
   protocolFeeBps: number;
-};
-
-const placeholderIdl = {
-  address: DHUKUTI_PROGRAM_ID.toBase58(),
-  version: "0.1.0",
-  name: "dhukuti",
-  instructions: []
 };
 
 export function useDhukuti() {
@@ -42,7 +42,8 @@ export function useDhukuti() {
 
   const program = useMemo(() => {
     if (!provider) return null;
-    return new Program(placeholderIdl, provider) as DhukutiProgram;
+    const idl = { ...dhukutiIdl, address: DHUKUTI_PROGRAM_ID.toBase58() } as Idl;
+    return new Program(idl, provider) as DhukutiProgram;
   }, [provider]);
 
   const deriveGroup = (creator: PublicKey) => PublicKey.findProgramAddressSync([Buffer.from("group"), creator.toBuffer()], DHUKUTI_PROGRAM_ID);
@@ -113,8 +114,9 @@ export function useDhukuti() {
   async function votePayout(group: PublicKey, nominee: PublicKey) {
     if (!program || !wallet) throw new Error("Connect a wallet first.");
     const [voterMember] = deriveMember(group, wallet.publicKey);
+    const groupAccount = await program.account.dhukutiGroup.fetch(group);
     const voteRecord = PublicKey.findProgramAddressSync(
-      [Buffer.from("vote"), group.toBuffer(), Buffer.from([0]), wallet.publicKey.toBuffer()],
+      [Buffer.from("vote"), group.toBuffer(), Buffer.from([groupAccount.currentCycle]), wallet.publicKey.toBuffer()],
       DHUKUTI_PROGRAM_ID
     )[0];
 

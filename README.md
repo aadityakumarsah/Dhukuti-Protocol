@@ -206,7 +206,13 @@ If you generate a new keypair with Anchor, update all three places:
 
 ## Frontend Environment Variables
 
-Create `app/.env.local` if you want to override defaults:
+Copy the example file:
+
+```bash
+cp app/.env.example app/.env.local
+```
+
+Then edit `app/.env.local` if you want to override defaults:
 
 ```bash
 NEXT_PUBLIC_SOLANA_RPC=http://127.0.0.1:8899
@@ -217,6 +223,196 @@ For devnet:
 
 ```bash
 NEXT_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com
+```
+
+## Make The App Fully Usable
+
+The hosted frontend only becomes useful for real users after the Solana program is deployed to the same cluster configured in `NEXT_PUBLIC_SOLANA_RPC`.
+
+For local testing, use localnet:
+
+```bash
+solana-test-validator
+```
+
+In another terminal:
+
+```bash
+solana config set --url localhost
+anchor build
+anchor deploy
+npm --prefix app run dev -- -p 3000
+```
+
+For public testing, use devnet:
+
+```bash
+solana config set --url devnet
+solana airdrop 2
+anchor build
+anchor deploy --provider.cluster devnet
+```
+
+After deployment, Anchor prints the deployed program id. Put that id in:
+
+- `Anchor.toml`
+- `programs/dhukuti/src/lib.rs`
+- `app/.env.local`
+- Vercel environment variable `NEXT_PUBLIC_DHUKUTI_PROGRAM_ID`
+
+Then rebuild the frontend.
+
+## Host The Frontend
+
+The simplest hosting path is Vercel because this is a Next.js app.
+
+### Option 1: Vercel Dashboard
+
+1. Push this repo to GitHub.
+2. Open Vercel and choose `Add New Project`.
+3. Import `aadityakumarsah/Dhukuti-Protocol`.
+4. Set the root directory to:
+
+```text
+app
+```
+
+5. Use these build settings:
+
+```text
+Framework Preset: Next.js
+Install Command: npm install
+Build Command: npm run build
+Output Directory: .next
+```
+
+6. Add environment variables:
+
+```bash
+NEXT_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com
+NEXT_PUBLIC_DHUKUTI_PROGRAM_ID=<your_deployed_program_id>
+```
+
+7. Deploy.
+
+### Option 2: Vercel CLI
+
+Install and login:
+
+```bash
+npm install -g vercel
+vercel login
+```
+
+Deploy from the app directory:
+
+```bash
+cd app
+vercel
+```
+
+When prompted:
+
+```text
+Set up and deploy: yes
+Framework: Next.js
+Build Command: npm run build
+Output Directory: .next
+```
+
+Set production environment variables:
+
+```bash
+vercel env add NEXT_PUBLIC_SOLANA_RPC production
+vercel env add NEXT_PUBLIC_DHUKUTI_PROGRAM_ID production
+vercel --prod
+```
+
+## Host The Smart Contract
+
+The Solana program is not hosted on Vercel. It must be deployed to a Solana cluster.
+
+Use devnet for demos:
+
+```bash
+solana config set --url devnet
+solana airdrop 2
+anchor build
+anchor deploy --provider.cluster devnet
+```
+
+Use mainnet only after audit and real treasury planning:
+
+```bash
+solana config set --url mainnet-beta
+anchor build
+anchor deploy --provider.cluster mainnet-beta
+```
+
+For mainnet, you need real SOL in the deployer wallet and should not use this MVP without a security audit.
+
+## Production Checklist
+
+Before inviting real users:
+
+- Deploy the program to devnet or mainnet.
+- Update frontend env vars to the deployed program id.
+- Replace demo program id in source if you generated a new keypair.
+- Run `anchor test`.
+- Run `npm --prefix app run build`.
+- Test with at least two wallets.
+- Confirm group creation, joining, contribution, vote, and reputation flows on the target cluster.
+- Add monitoring for failed transactions and RPC errors.
+- Use a paid RPC provider for public demos instead of relying on public devnet RPC.
+- Get a smart contract audit before handling real funds.
+
+## Common Problems
+
+### Wallet connects but transactions fail
+
+Check that:
+
+- `NEXT_PUBLIC_SOLANA_RPC` points to the same cluster where the program is deployed.
+- `NEXT_PUBLIC_DHUKUTI_PROGRAM_ID` is the deployed program id.
+- Your wallet is on the same network.
+- Your wallet has SOL for transaction fees and contributions.
+
+### `anchor` command not found
+
+Install Anchor Version Manager:
+
+```bash
+cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+avm install 0.31.1
+avm use 0.31.1
+```
+
+### `solana` command not found
+
+Install Solana CLI:
+
+```bash
+sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+```
+
+Restart your terminal and run:
+
+```bash
+solana --version
+```
+
+### Vercel build cannot find dependencies
+
+Make sure the Vercel project root directory is set to:
+
+```text
+app
+```
+
+Do not set the root to the repository root unless you also change the Vercel build command to:
+
+```bash
+npm --prefix app install && npm --prefix app run build
 ```
 
 ## How The Protocol Works
@@ -241,7 +437,7 @@ NEXT_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com
 
 - Random and auction allocation are present in the enum but not fully implemented.
 - Vote tally is intentionally simple and tracks the current leader.
-- The frontend currently uses a placeholder IDL until `anchor build` generates the real IDL.
+- The frontend includes a checked-in IDL for this MVP; after changing the program, regenerate it with `anchor build`.
 - zk proof utilities are placeholders for demo structure, not production circuits.
 - The app is a hackathon MVP, not audited production software.
 
