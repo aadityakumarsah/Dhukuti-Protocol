@@ -48,7 +48,7 @@ function NetworkBadge({ detected }: { detected: string }) {
 }
 
 function HomeContent() {
-  const { connection, wallet, deriveGroup, getGroup, connected } = useDhukuti();
+  const { connection, wallet, deriveGroup, getGroup, connected, program } = useDhukuti();
   const [selectedGroup, setSelectedGroup] = useState<PublicKey | null>(null);
   const [networkName, setNetworkName] = useState("");
 
@@ -63,11 +63,11 @@ function HomeContent() {
   const ownGroup = wallet ? deriveGroup(wallet.publicKey)[0] : null;
 
   useEffect(() => {
-    if (!connected || !ownGroup || selectedGroup) return;
+    if (!connected || !ownGroup || selectedGroup || !program) return;
     getGroup(ownGroup).then((data) => {
       if (data) setSelectedGroup(ownGroup);
     });
-  }, [connected, ownGroup, selectedGroup, getGroup]);
+  }, [connected, ownGroup, selectedGroup, getGroup, program]);
 
   function handleGroupCreated(address: PublicKey) {
     setSelectedGroup(address);
