@@ -200,10 +200,10 @@ anchor build
 anchor test
 ```
 
-The program id currently configured in `Anchor.toml`, the Rust program, and the frontend fallback is:
+The program id currently deployed on devnet is:
 
 ```text
-3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt
+egyrA1EJRsr2b7QbciVXX78U3TkPy8GQ9dTDJQHPHvo
 ```
 
 If you generate a new keypair with Anchor, update all three places:
@@ -223,8 +223,8 @@ cp app/.env.example app/.env.local
 Then edit `app/.env.local` if you want to override defaults:
 
 ```bash
-NEXT_PUBLIC_SOLANA_RPC=http://127.0.0.1:8899
-NEXT_PUBLIC_DHUKUTI_PROGRAM_ID=3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt
+NEXT_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com
+NEXT_PUBLIC_DHUKUTI_PROGRAM_ID=egyrA1EJRsr2b7QbciVXX78U3TkPy8GQ9dTDJQHPHvo
 ```
 
 For devnet:
@@ -425,14 +425,42 @@ npm --prefix app install && npm --prefix app run build
 
 ## How The Protocol Works
 
-1. A creator creates a group with fixed terms.
-2. Members join by depositing a security stake and first contribution.
-3. The creator activates the group once membership is full.
-4. Members contribute every cycle.
-5. Members vote on the payout recipient.
-6. The program distributes the pool from the vault.
-7. The cycle advances until all members have received a payout.
-8. Members claim reputation after successful completion.
+### Step-by-step Workflow
+
+#### 1. Create Group (One person)
+- One user (creator) fills the **Create Group** form with:
+  - Contribution amount (e.g., 0.05 SOL)
+  - Security deposit (e.g., 0.02 SOL)
+  - Max members (e.g., 5)
+  - Cycle days (e.g., 30)
+- Creator pays the creation fee — just creates the group account (no SOL transferred yet)
+- Group status becomes **"Forming"**
+
+#### 2. Members Join
+- Creator shares the **group address** with other members
+- Each member pastes the group address in the **Contribution Panel** and clicks **Join**
+- Each member approves the transaction (pays **contribution + deposit** to the vault PDA)
+- Creator also needs to **Join** (not auto-added)
+- After all members join, `current_members = max_members`
+
+#### 3. Activate Group (Creator only)
+- Creator clicks **Activate** on the Group Dashboard
+- This starts **Cycle 1**
+- Group status changes to **"Active"**
+
+#### 4. Each Cycle (repeats for every member)
+- All members click **Contribute** (pays contribution amount to vault)
+- Members **Vote** on who should get the payout this cycle
+- When all contributed and voting ends, anyone can click **Distribute**
+- The winner receives the **full pool** (all contributions minus protocol fee)
+- Next cycle begins automatically
+
+#### 5. Completion
+- After all members have received a payout, group status → **"Completed"**
+- Members can **Claim Reputation** (on-chain credit score for future groups)
+
+### Summary
+**Create → Join → Activate → Contribute → Vote → Distribute → Repeat until everyone gets paid.**
 
 ## Main Accounts
 
