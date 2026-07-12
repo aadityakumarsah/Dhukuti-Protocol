@@ -1,0 +1,220 @@
+{
+  "address": "3XxJ1AQGdvUKbSwksUKoew5xDZK1p7q48vvBhQejBHHt",
+  "metadata": {
+    "name": "dhukuti",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Trustless rotating savings protocol on Solana"
+  },
+  "instructions": [
+    {
+      "name": "createGroup",
+      "discriminator": [79, 60, 158, 134, 61, 199, 56, 248],
+      "accounts": [
+        { "name": "creator", "writable": true, "signer": true },
+        { "name": "group", "writable": true },
+        { "name": "vault", "writable": true },
+        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+      ],
+      "args": [
+        { "name": "contributionAmount", "type": "u64" },
+        { "name": "securityDeposit", "type": "u64" },
+        { "name": "maxMembers", "type": "u8" },
+        { "name": "cyclePeriod", "type": "i64" },
+        { "name": "allocationMethod", "type": { "defined": { "name": "AllocationMethod" } } },
+        { "name": "protocolFeeBps", "type": "u16" }
+      ]
+    },
+    {
+      "name": "joinGroup",
+      "discriminator": [121, 56, 199, 19, 250, 70, 44, 184],
+      "accounts": [
+        { "name": "wallet", "writable": true, "signer": true },
+        { "name": "group", "writable": true },
+        { "name": "member", "writable": true },
+        { "name": "vault", "writable": true },
+        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+      ],
+      "args": []
+    },
+    {
+      "name": "activateGroup",
+      "discriminator": [96, 168, 28, 195, 112, 207, 238, 48],
+      "accounts": [
+        { "name": "creator", "signer": true },
+        { "name": "group", "writable": true }
+      ],
+      "args": []
+    },
+    {
+      "name": "contribute",
+      "discriminator": [82, 33, 68, 131, 32, 0, 205, 95],
+      "accounts": [
+        { "name": "wallet", "writable": true, "signer": true },
+        { "name": "group", "writable": true },
+        { "name": "member", "writable": true },
+        { "name": "vault", "writable": true },
+        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+      ],
+      "args": []
+    },
+    {
+      "name": "votePayout",
+      "discriminator": [253, 223, 29, 124, 122, 195, 50, 5],
+      "accounts": [
+        { "name": "voter", "writable": true, "signer": true },
+        { "name": "group", "writable": true },
+        { "name": "voterMember" },
+        { "name": "voteRecord", "writable": true },
+        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+      ],
+      "args": [{ "name": "nominee", "type": "pubkey" }]
+    },
+    {
+      "name": "distribute",
+      "discriminator": [191, 44, 223, 207, 164, 236, 126, 61],
+      "accounts": [
+        { "name": "authority", "signer": true },
+        { "name": "group", "writable": true },
+        { "name": "recipientMember", "writable": true },
+        { "name": "recipient", "writable": true },
+        { "name": "vault", "writable": true }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimReputation",
+      "discriminator": [73, 120, 245, 41, 109, 127, 63, 241],
+      "accounts": [
+        { "name": "wallet", "writable": true, "signer": true },
+        { "name": "group" },
+        { "name": "member", "writable": true },
+        { "name": "attestation", "writable": true },
+        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+      ],
+      "args": []
+    },
+    {
+      "name": "slashDeposit",
+      "discriminator": [90, 122, 235, 148, 81, 10, 131, 229],
+      "accounts": [
+        { "name": "authority", "signer": true },
+        { "name": "group", "writable": true },
+        { "name": "defaulterWallet", "writable": true },
+        { "name": "defaulterMember", "writable": true },
+        { "name": "vault", "writable": true },
+        { "name": "treasury", "writable": true }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    { "name": "DhukutiGroup", "discriminator": [104, 197, 94, 211, 101, 1, 29, 4] },
+    { "name": "Member", "discriminator": [54, 19, 162, 21, 29, 166, 17, 198] },
+    { "name": "VoteRecord", "discriminator": [112, 9, 123, 165, 234, 9, 157, 167] },
+    { "name": "ReputationAttestation", "discriminator": [55, 68, 116, 237, 237, 115, 173, 127] }
+  ],
+  "types": [
+    {
+      "name": "DhukutiGroup",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "creator", "type": "pubkey" },
+          { "name": "vault", "type": "pubkey" },
+          { "name": "contributionAmount", "type": "u64" },
+          { "name": "securityDeposit", "type": "u64" },
+          { "name": "maxMembers", "type": "u8" },
+          { "name": "currentMembers", "type": "u8" },
+          { "name": "cyclePeriod", "type": "i64" },
+          { "name": "cycleStartedAt", "type": "i64" },
+          { "name": "currentCycle", "type": "u8" },
+          { "name": "allocationMethod", "type": { "defined": { "name": "AllocationMethod" } } },
+          { "name": "status", "type": { "defined": { "name": "GroupStatus" } } },
+          { "name": "protocolFeeBps", "type": "u16" },
+          { "name": "totalContributedThisCycle", "type": "u64" },
+          { "name": "contributionsThisCycle", "type": "u8" },
+          { "name": "currentRecipient", "type": "pubkey" },
+          { "name": "voteLeader", "type": "pubkey" },
+          { "name": "voteLeaderCount", "type": "u8" },
+          { "name": "bump", "type": "u8" },
+          { "name": "vaultBump", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "Member",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "group", "type": "pubkey" },
+          { "name": "wallet", "type": "pubkey" },
+          { "name": "cyclesContributed", "type": "u8" },
+          { "name": "lastContributedCycle", "type": "u8" },
+          { "name": "payoutReceived", "type": "bool" },
+          { "name": "payoutCycle", "type": "u8" },
+          { "name": "securityDeposit", "type": "u64" },
+          { "name": "isActive", "type": "bool" },
+          { "name": "reputationScore", "type": "u16" },
+          { "name": "reputationClaimed", "type": "bool" },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "VoteRecord",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "group", "type": "pubkey" },
+          { "name": "cycle", "type": "u8" },
+          { "name": "voter", "type": "pubkey" },
+          { "name": "nominee", "type": "pubkey" },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "ReputationAttestation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "member", "type": "pubkey" },
+          { "name": "wallet", "type": "pubkey" },
+          { "name": "group", "type": "pubkey" },
+          { "name": "completedCycles", "type": "u8" },
+          { "name": "reputationScore", "type": "u16" },
+          { "name": "issuedAt", "type": "i64" },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "AllocationMethod",
+      "type": {
+        "kind": "enum",
+        "variants": [{ "name": "Vote" }, { "name": "Random" }, { "name": "Auction" }]
+      }
+    },
+    {
+      "name": "GroupStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [{ "name": "Forming" }, { "name": "Active" }, { "name": "Completed" }, { "name": "Defaulted" }]
+      }
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "GroupFull", "msg": "The group has reached its member limit." },
+    { "code": 6001, "name": "InvalidGroupStatus", "msg": "The group is not in the required state for this action." },
+    { "code": 6002, "name": "GroupNotReady", "msg": "The group is not ready to activate." },
+    { "code": 6003, "name": "AlreadyContributed", "msg": "This member has already contributed for the current cycle." },
+    { "code": 6004, "name": "InactiveMember", "msg": "This member is not active." },
+    { "code": 6005, "name": "PoolIncomplete", "msg": "The contribution pool is not complete yet." },
+    { "code": 6006, "name": "PayoutAlreadyReceived", "msg": "This member has already received a payout." },
+    { "code": 6007, "name": "VoteNotWon", "msg": "The selected payout recipient has not won the current vote." },
+    { "code": 6008, "name": "GracePeriodActive", "msg": "The current cycle is still inside its grace period." },
+    { "code": 6009, "name": "ReputationAlreadyClaimed", "msg": "This member already claimed completion reputation." },
+    { "code": 6010, "name": "InvalidProtocolFee", "msg": "Invalid protocol fee." }
+  ]
+}
