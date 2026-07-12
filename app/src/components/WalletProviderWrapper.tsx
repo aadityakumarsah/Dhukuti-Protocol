@@ -76,9 +76,27 @@ function HomeContent() {
   return (
     <main>
       <header className="topbar">
-        <div>
-          <p className="eyebrow">Solana ROSCA protocol</p>
-          <h1>Dhukuti Protocol</h1>
+        <div className="brand">
+          <svg
+            className="logo-icon"
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="16" cy="16" r="14" stroke="var(--primary)" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.3" />
+            <circle cx="16" cy="16" r="9" stroke="var(--primary)" strokeWidth="1.2" strokeDasharray="3 4" opacity="0.2" />
+            <circle cx="16" cy="16" r="2" fill="var(--primary)" opacity="0.8" />
+            <circle cx="16" cy="2" r="1.8" fill="var(--primary)" opacity="0.9" />
+            <circle cx="30" cy="16" r="1.8" fill="var(--primary)" opacity="0.7" />
+            <circle cx="16" cy="30" r="1.8" fill="var(--primary)" opacity="0.5" />
+            <circle cx="2" cy="16" r="1.8" fill="var(--primary)" opacity="0.6" />
+          </svg>
+          <div>
+            <p className="eyebrow">Solana ROSCA protocol</p>
+            <h1>Dhukuti Protocol</h1>
+          </div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {ownGroup && selectedGroup?.toBase58() !== ownGroup.toBase58() && (

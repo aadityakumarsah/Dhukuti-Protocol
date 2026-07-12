@@ -39,6 +39,16 @@ main {
   padding: 20px clamp(18px, 5vw, 64px);
 }
 
+.brand {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.logo-icon {
+  flex-shrink: 0;
+}
+
 .eyebrow {
   color: var(--primary);
   font-size: 0.78rem;
