@@ -2,19 +2,41 @@
 
 import { BadgeCheck } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 import { useDhukuti } from "@/hooks/useDhukuti";
 
-export function ReputationCard() {
+type Props = {
+  groupAddress?: PublicKey | null;
+};
+
+export function ReputationCard({ groupAddress }: Props) {
   const { claimReputation, connected } = useDhukuti();
   const [status, setStatus] = useState("");
+  const [groupInput, setGroupInput] = useState("");
+
+  useEffect(() => {
+    if (groupAddress) {
+      setGroupInput(groupAddress.toBase58());
+    }
+  }, [groupAddress]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const raw = new FormData(event.currentTarget).get("group") as string;
+    if (!raw.trim()) {
+      setStatus("Enter a group address.");
+      return;
+    }
+    let group: PublicKey;
+    try {
+      group = new PublicKey(raw.trim());
+    } catch {
+      setStatus("Invalid group address.");
+      return;
+    }
     setStatus("Claiming attestation...");
     try {
-      const group = new PublicKey(String(new FormData(event.currentTarget).get("group")));
       const signature = await claimReputation(group);
       setStatus(`Attested: ${signature.slice(0, 10)}...`);
     } catch (error) {
@@ -37,7 +59,12 @@ export function ReputationCard() {
       </div>
       <label>
         Completed group
-        <input name="group" placeholder="Paste group PDA" />
+        <input
+          name="group"
+          placeholder="Paste group PDA"
+          value={groupInput}
+          onChange={(e) => setGroupInput(e.target.value)}
+        />
       </label>
       <div className="button-row">
         <button className="primary-button" disabled={!connected} type="submit">
