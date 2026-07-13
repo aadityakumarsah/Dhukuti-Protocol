@@ -28,6 +28,10 @@ export function formatAnchorError(error: unknown): string {
     return "Insufficient SOL balance for this transaction.";
   }
 
+  if (msg.includes("instruction spent from the balance of an account it does not own")) {
+    return "Program needs redeploy — distribute bug fixed in code but not yet deployed.";
+  }
+
   if (msg.includes("0x1772")) {
     return "Group is full.";
   }
