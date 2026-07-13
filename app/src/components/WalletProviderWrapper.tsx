@@ -182,7 +182,7 @@ function GroupSelector({
         {/* Load Group Form */}
         <div style={{ flex: "1 1 300px", minWidth: "280px" }}>
           <p style={{ margin: "0 0 6px 0", fontSize: "0.82rem", fontWeight: 600, color: "var(--muted)" }}>Load Group Address</p>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="group-selector-input-row" style={{ display: "flex", gap: 8 }}>
             <input
               type="text"
               placeholder="Paste 44-character group PDA"
@@ -326,7 +326,7 @@ function HomeContent() {
             <h1>Dhukuti Protocol</h1>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div className="topbar-actions" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
           <a
             href="https://docsdhukuti-protocol.vercel.app"
             target="_blank"
@@ -371,7 +371,7 @@ function HomeContent() {
           textAlign: "center",
         }}>
           Connected to <strong>{networkName}</strong>.
-          Make sure your wallet is set to the same network.
+          <span className="network-hint"> Make sure your wallet is set to the same network.</span>
         </div>
       )}
 
