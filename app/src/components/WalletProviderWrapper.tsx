@@ -87,6 +87,8 @@ function GroupSelector({
       if (data) {
         setSelectedGroup(pubkey);
         saveGroupAddress(pubkey.toBase58());
+        const deselected: string[] = JSON.parse(localStorage.getItem("dhukuti_deselected") || "[]");
+        localStorage.setItem("dhukuti_deselected", JSON.stringify(deselected.filter((a) => a !== pubkey.toBase58())));
         setSuccessMsg("Group loaded successfully!");
         setInputVal("");
       } else {
@@ -159,7 +161,16 @@ function GroupSelector({
                 <button 
                   className="secondary-button" 
                   style={{ minHeight: 28, height: 28, padding: "0 8px", fontSize: "0.75rem", background: "#fee2e2", color: "#b91c1c" }} 
-                  onClick={() => setSelectedGroup(null)}
+                  onClick={() => {
+                    setSelectedGroup(null);
+                    if (selectedGroup) {
+                      const deselected = JSON.parse(localStorage.getItem("dhukuti_deselected") || "[]");
+                      const addr = selectedGroup.toBase58();
+                      if (!deselected.includes(addr)) {
+                        localStorage.setItem("dhukuti_deselected", JSON.stringify([...deselected, addr]));
+                      }
+                    }
+                  }}
                 >
                   Deselect
                 </button>
@@ -269,11 +280,15 @@ function HomeContent() {
   useEffect(() => {
     if (connected && wallet && program) {
       getUserGroups(wallet.publicKey).then((memberships) => {
+        const deselected: string[] = JSON.parse(localStorage.getItem("dhukuti_deselected") || "[]");
         memberships.forEach((membership) => {
           saveGroupAddress(membership.account.group.toBase58());
         });
-        if (memberships.length > 0) {
-          setSelectedGroup((prev) => prev || memberships[0].account.group);
+        const toSelect = memberships.find(
+          (m) => !deselected.includes(m.account.group.toBase58())
+        );
+        if (toSelect) {
+          setSelectedGroup((prev) => prev || toSelect.account.group);
         }
       });
     }
