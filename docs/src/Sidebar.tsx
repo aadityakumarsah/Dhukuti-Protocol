@@ -54,6 +54,8 @@ const navTree: NavItem[] = [
     icon: Users,
     children: [
       { label: "How the App Works", href: "#how-the-app-works-user-flow" },
+      { label: "Step-by-Step Guide", href: "#step-by-step-user-guide" },
+      { label: "Troubleshooting", href: "#troubleshooting" },
       { label: "For a 5 Year Old", href: "#how-to-use-it-for-a-5-year-old" },
       { label: "Privacy & Policy", href: "#privacy--policy" },
       { label: "Safety", href: "#safety" },
