@@ -4,7 +4,7 @@ import { ConnectionProvider, WalletProvider, useWallet } from "@solana/wallet-ad
 import { WalletModalProvider, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { PublicKey } from "@solana/web3.js";
-import { ShieldCheck, UsersRound, Vote, WalletCards } from "lucide-react";
+import { ShieldCheck, UsersRound, Vote, WalletCards, BookOpen } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { ContributionPanel } from "@/components/ContributionPanel";
@@ -327,6 +327,25 @@ function HomeContent() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <a
+            href="https://docsdhukuti-protocol.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="secondary-button"
+            style={{ 
+              fontSize: "0.78rem", 
+              padding: "0 12px", 
+              minHeight: 36, 
+              height: 36, 
+              textDecoration: "none", 
+              display: "inline-flex", 
+              alignItems: "center",
+              gap: 6
+            }}
+          >
+            <BookOpen size={15} />
+            Docs
+          </a>
           {ownGroup && selectedGroup?.toBase58() !== ownGroup.toBase58() && (
             <button
               className="secondary-button"
