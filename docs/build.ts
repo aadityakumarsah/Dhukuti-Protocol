@@ -1,5 +1,5 @@
 import tailwind from "bun-plugin-tailwind";
-import { rm } from "node:fs/promises";
+import { cp, rm } from "node:fs/promises";
 import path from "node:path";
 
 const outdir = path.join(process.cwd(), "dist");
@@ -21,4 +21,14 @@ const result = await Bun.build({
 
 for (const output of result.outputs) {
   console.log(` ${path.relative(process.cwd(), output.path)}  ${(output.size / 1024).toFixed(1)} KB`);
+}
+
+// Copy static assets
+const imagesDir = path.join(process.cwd(), "src", "images");
+const outImagesDir = path.join(outdir, "images");
+try {
+  await cp(imagesDir, outImagesDir, { recursive: true });
+  console.log(` Copied images to ${outImagesDir}`);
+} catch (e) {
+  console.error(" Failed to copy images:", e);
 }

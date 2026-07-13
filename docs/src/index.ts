@@ -1,8 +1,15 @@
 import { serve } from "bun";
+import { join } from "path";
 import index from "./index.html";
 
 const server = serve({
   routes: {
+    // Serve SVG images from the images directory
+    "/images/:file": async req => {
+      const file = Bun.file(join(import.meta.dir, "images", req.params.file));
+      return new Response(file);
+    },
+
     // Serve index.html for all unmatched routes.
     "/*": index,
 
