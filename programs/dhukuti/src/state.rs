@@ -84,6 +84,7 @@ pub enum AllocationMethod {
     Vote,
     Random,
     Auction,
+    RoundRobin,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq)]

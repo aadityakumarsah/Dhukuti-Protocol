@@ -26,4 +26,8 @@ pub enum DhukutiError {
     InvalidProtocolFee,
     #[msg("Deposit already withdrawn.")]
     DepositAlreadyWithdrawn,
+    #[msg("Members cannot vote for themselves.")]
+    CannotSelfVote,
+    #[msg("This allocation method does not use voting.")]
+    InvalidAllocationMethod,
 }

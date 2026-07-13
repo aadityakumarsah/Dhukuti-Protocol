@@ -33,11 +33,15 @@ pub fn vote_payout(ctx: Context<VotePayout>, nominee: Pubkey) -> Result<()> {
     );
     require!(
         group.allocation_method == AllocationMethod::Vote,
-        DhukutiError::InvalidGroupStatus
+        DhukutiError::InvalidAllocationMethod
     );
     require!(
         ctx.accounts.voter_member.is_active,
         DhukutiError::InactiveMember
+    );
+    require!(
+        ctx.accounts.voter.key() != nominee,
+        DhukutiError::CannotSelfVote
     );
 
     let vote_record = &mut ctx.accounts.vote_record;

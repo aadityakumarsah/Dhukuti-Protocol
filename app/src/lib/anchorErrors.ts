@@ -10,6 +10,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   InvalidProtocolFee: "Protocol fee is out of range.",
   VoteAlreadyCast: "You already voted this cycle.",
   DepositAlreadyWithdrawn: "Deposit already returned.",
+  CannotSelfVote: "You cannot vote for yourself.",
+  InvalidAllocationMethod: "This group uses round-robin, not voting.",
 };
 
 export function formatAnchorError(error: unknown): string {

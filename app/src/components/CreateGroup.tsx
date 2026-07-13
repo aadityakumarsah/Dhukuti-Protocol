@@ -32,7 +32,7 @@ export function CreateGroup({ onGroupCreated }: Props) {
         securityDepositSol: Number(form.get("securityDepositSol")),
         maxMembers: Number(form.get("maxMembers")),
         cycleDays: Number(form.get("cycleDays")),
-        allocationMethod: String(form.get("allocationMethod")) as "vote" | "random" | "auction",
+        allocationMethod: String(form.get("allocationMethod")) as "vote" | "roundRobin" | "random" | "auction",
         protocolFeeBps: Number(form.get("protocolFeeBps"))
       });
       setTxSig(signature);
@@ -85,6 +85,7 @@ export function CreateGroup({ onGroupCreated }: Props) {
           Allocation
           <select name="allocationMethod" defaultValue="vote">
             <option value="vote">Janamat vote</option>
+            <option value="roundRobin">Round-robin</option>
             <option value="random">Random draw</option>
             <option value="auction">Auction</option>
           </select>

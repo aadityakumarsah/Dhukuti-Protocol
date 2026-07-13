@@ -206,7 +206,7 @@
       "name": "AllocationMethod",
       "type": {
         "kind": "enum",
-        "variants": [{ "name": "Vote" }, { "name": "Random" }, { "name": "Auction" }]
+        "variants": [{ "name": "Vote" }, { "name": "Random" }, { "name": "Auction" }, { "name": "RoundRobin" }]
       }
     },
     {
@@ -229,6 +229,8 @@
     { "code": 6008, "name": "GracePeriodActive", "msg": "The current cycle is still inside its grace period." },
     { "code": 6009, "name": "ReputationAlreadyClaimed", "msg": "This member already claimed completion reputation." },
     { "code": 6010, "name": "InvalidProtocolFee", "msg": "Invalid protocol fee." },
-    { "code": 6011, "name": "DepositAlreadyWithdrawn", "msg": "Deposit already withdrawn." }
+    { "code": 6011, "name": "DepositAlreadyWithdrawn", "msg": "Deposit already withdrawn." },
+    { "code": 6012, "name": "CannotSelfVote", "msg": "Members cannot vote for themselves." },
+    { "code": 6013, "name": "InvalidAllocationMethod", "msg": "This allocation method does not use voting." }
   ]
 }

@@ -65,7 +65,7 @@ export type CreateGroupInput = {
   securityDepositSol: number;
   maxMembers: number;
   cycleDays: number;
-  allocationMethod: "vote" | "random" | "auction";
+  allocationMethod: "vote" | "roundRobin" | "random" | "auction";
   protocolFeeBps: number;
 };
 
@@ -82,7 +82,8 @@ export function formatAllocation(method: EnumObject): string {
   const key = getEnumKey(method);
   if (key === "vote") return "Janamat vote";
   if (key === "random") return "Random draw";
-  return "Auction";
+  if (key === "auction") return "Auction";
+  return "Round-robin";
 }
 
 export function useDhukuti() {

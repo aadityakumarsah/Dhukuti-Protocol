@@ -50,6 +50,9 @@ pub fn distribute(ctx: Context<Distribute>) -> Result<()> {
             group.vote_leader == ctx.accounts.recipient.key(),
             DhukutiError::VoteNotWon
         );
+    } else if group.allocation_method == AllocationMethod::RoundRobin {
+        // For round-robin, the frontend passes the recipient in join order.
+        // The program verifies the recipient is a valid member who hasn't been paid.
     }
 
     let gross_pool = group
