@@ -242,7 +242,7 @@ function GroupSelector({
 }
 
 function HomeContent() {
-  const { connection, wallet, deriveGroup, getGroup, connected, program } = useDhukuti();
+  const { connection, wallet, deriveGroup, getGroup, getUserGroups, connected, program } = useDhukuti();
   const [selectedGroup, setSelectedGroup] = useState<PublicKey | null>(null);
   const [networkName, setNetworkName] = useState("");
   const [savedGroups, setSavedGroups] = useState<string[]>([]);
@@ -266,6 +266,19 @@ function HomeContent() {
     }
   }, []);
 
+  useEffect(() => {
+    if (connected && wallet && program) {
+      getUserGroups(wallet.publicKey).then((memberships) => {
+        memberships.forEach((membership) => {
+          saveGroupAddress(membership.account.group.toBase58());
+        });
+        if (memberships.length > 0) {
+          setSelectedGroup((prev) => prev || memberships[0].account.group);
+        }
+      });
+    }
+  }, [connected, wallet, program, getUserGroups]);
+
   const saveGroupAddress = (addressStr: string) => {
     if (!addressStr) return;
     try {
@@ -281,7 +294,11 @@ function HomeContent() {
     });
   };
 
-  const ownGroup = wallet ? deriveGroup(wallet.publicKey)[0] : null;
+  const ownGroupStr = wallet?.publicKey?.toBase58();
+  const ownGroup = useMemo(() => {
+    if (!wallet || !deriveGroup) return null;
+    return deriveGroup(wallet.publicKey)[0];
+  }, [ownGroupStr, deriveGroup]);
 
   useEffect(() => {
     if (!connected || !ownGroup || !program) return;
