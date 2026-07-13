@@ -291,6 +291,23 @@ export function useDhukuti() {
       .rpc();
   }
 
+  async function withdrawDeposit(group: PublicKey) {
+    if (!program || !wallet) throw new Error("Connect a wallet first.");
+    const [member] = deriveMember(group, wallet.publicKey);
+    const [vault] = deriveVault(group);
+
+    return program.methods
+      .withdrawDeposit()
+      .accounts({
+        wallet: wallet.publicKey,
+        group,
+        member,
+        vault,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc();
+  }
+
   return {
     connected: Boolean(wallet),
     wallet,
@@ -310,6 +327,7 @@ export function useDhukuti() {
     contribute,
     distribute,
     votePayout,
-    claimReputation
+    claimReputation,
+    withdrawDeposit,
   };
 }

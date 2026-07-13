@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, ArrowLeftFromLine } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -13,8 +13,9 @@ type Props = {
 };
 
 export function ReputationCard({ groupAddress }: Props) {
-  const { claimReputation, connected } = useDhukuti();
+  const { claimReputation, withdrawDeposit, connected } = useDhukuti();
   const [status, setStatus] = useState("");
+  const [depositStatus, setDepositStatus] = useState("");
   const [groupInput, setGroupInput] = useState("");
 
   useEffect(() => {
@@ -47,6 +48,19 @@ export function ReputationCard({ groupAddress }: Props) {
     }
   }
 
+  async function handleWithdraw() {
+    if (!groupAddress) return;
+    setDepositStatus("Withdrawing deposit...");
+    try {
+      const sig = await withdrawDeposit(groupAddress);
+      setDepositStatus(`Deposit returned: ${sig.slice(0, 10)}...`);
+      toast.success("Security deposit returned to your wallet!");
+    } catch (error) {
+      toast.error(formatAnchorError(error));
+      setDepositStatus("");
+    }
+  }
+
   return (
     <form className="panel medium" onSubmit={onSubmit}>
       <h3>Reputation</h3>
@@ -74,8 +88,15 @@ export function ReputationCard({ groupAddress }: Props) {
           <BadgeCheck size={18} />
           Claim
         </button>
+        {groupAddress && (
+          <button className="secondary-button" type="button" disabled={!connected} onClick={handleWithdraw}>
+            <ArrowLeftFromLine size={18} />
+            Withdraw Deposit
+          </button>
+        )}
       </div>
       {status ? <p className="warning">{status}</p> : null}
+      {depositStatus ? <p className="warning">{depositStatus}</p> : null}
     </form>
   );
 }

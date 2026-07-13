@@ -9,6 +9,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   InactiveMember: "You are not an active member.",
   InvalidProtocolFee: "Protocol fee is out of range.",
   VoteAlreadyCast: "You already voted this cycle.",
+  DepositAlreadyWithdrawn: "Deposit already returned.",
 };
 
 export function formatAnchorError(error: unknown): string {

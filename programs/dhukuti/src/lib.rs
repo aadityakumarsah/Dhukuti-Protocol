@@ -59,4 +59,8 @@ pub mod dhukuti {
     pub fn slash_deposit(ctx: Context<SlashDeposit>) -> Result<()> {
         instructions::slash_deposit(ctx)
     }
+
+    pub fn withdraw_deposit(ctx: Context<WithdrawDeposit>) -> Result<()> {
+        instructions::withdraw_deposit(ctx)
+    }
 }

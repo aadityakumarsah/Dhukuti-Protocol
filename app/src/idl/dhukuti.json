@@ -84,6 +84,18 @@
       "args": []
     },
     {
+      "name": "withdrawDeposit",
+      "discriminator": [197, 59, 182, 208, 73, 187, 119, 25],
+      "accounts": [
+        { "name": "wallet", "writable": true, "signer": true },
+        { "name": "group", "writable": true },
+        { "name": "member", "writable": true },
+        { "name": "vault", "writable": true },
+        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+      ],
+      "args": []
+    },
+    {
       "name": "claimReputation",
       "discriminator": [73, 120, 245, 41, 109, 127, 63, 241],
       "accounts": [
@@ -216,6 +228,7 @@
     { "code": 6007, "name": "VoteNotWon", "msg": "The selected payout recipient has not won the current vote." },
     { "code": 6008, "name": "GracePeriodActive", "msg": "The current cycle is still inside its grace period." },
     { "code": 6009, "name": "ReputationAlreadyClaimed", "msg": "This member already claimed completion reputation." },
-    { "code": 6010, "name": "InvalidProtocolFee", "msg": "Invalid protocol fee." }
+    { "code": 6010, "name": "InvalidProtocolFee", "msg": "Invalid protocol fee." },
+    { "code": 6011, "name": "DepositAlreadyWithdrawn", "msg": "Deposit already withdrawn." }
   ]
 }

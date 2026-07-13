@@ -6,6 +6,7 @@ pub mod distribute;
 pub mod join_group;
 pub mod slash_deposit;
 pub mod vote_payout;
+pub mod withdraw_deposit;
 
 pub use activate_group::*;
 pub use claim_reputation::*;
@@ -15,3 +16,4 @@ pub use distribute::*;
 pub use join_group::*;
 pub use slash_deposit::*;
 pub use vote_payout::*;
+pub use withdraw_deposit::*;

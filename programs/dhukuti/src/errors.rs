@@ -24,4 +24,6 @@ pub enum DhukutiError {
     ReputationAlreadyClaimed,
     #[msg("Invalid protocol fee.")]
     InvalidProtocolFee,
+    #[msg("Deposit already withdrawn.")]
+    DepositAlreadyWithdrawn,
 }
