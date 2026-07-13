@@ -7,7 +7,7 @@ use crate::state::{DhukutiGroup, GroupStatus, Member, ReputationAttestation};
 pub struct ClaimReputation<'info> {
     #[account(mut)]
     pub wallet: Signer<'info>,
-    pub group: Account<'info, DhukutiGroup>,
+    pub group: Box<Account<'info, DhukutiGroup>>,
     #[account(
         mut,
         seeds = [b"member", group.key().as_ref(), wallet.key().as_ref()],

@@ -9,7 +9,7 @@ pub struct JoinGroup<'info> {
     #[account(mut)]
     pub wallet: Signer<'info>,
     #[account(mut)]
-    pub group: Account<'info, DhukutiGroup>,
+    pub group: Box<Account<'info, DhukutiGroup>>,
     #[account(
         init,
         payer = wallet,

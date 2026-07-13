@@ -148,8 +148,9 @@
           { "name": "totalContributedThisCycle", "type": "u64" },
           { "name": "contributionsThisCycle", "type": "u8" },
           { "name": "currentRecipient", "type": "pubkey" },
-          { "name": "voteLeader", "type": "pubkey" },
-          { "name": "voteLeaderCount", "type": "u8" },
+          { "name": "voteNominees", "type": { "array": ["pubkey", 32] } },
+          { "name": "voteCounts", "type": { "array": ["u8", 32] } },
+          { "name": "voteCount", "type": "u8" },
           { "name": "bump", "type": "u8" },
           { "name": "vaultBump", "type": "u8" }
         ]

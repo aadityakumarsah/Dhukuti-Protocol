@@ -134,10 +134,30 @@ export function GroupDashboard({ groupAddress }: Props) {
 
   async function handleDistribute() {
     if (!group) return;
-    const recipient = group.voteLeader;
-    if (recipient.equals(PublicKey.default)) {
-      toast.error("No vote leader yet. Vote first.");
-      return;
+    const method = getEnumKey(group.allocationMethod);
+    let recipient: PublicKey;
+    if (method === "vote") {
+      let bestIdx = 0;
+      for (let i = 0; i < group.voteCount; i++) {
+        if (group.voteCounts[i] > group.voteCounts[bestIdx]) bestIdx = i;
+      }
+      recipient = group.voteNominees[bestIdx];
+      if (!recipient || recipient.equals(PublicKey.default)) {
+        toast.error("No vote leader yet. Vote first.");
+        return;
+      }
+    } else if (method === "roundRobin") {
+      recipient = members.find((m) => !m.account.payoutReceived)?.account.wallet ?? PublicKey.default;
+      if (recipient.equals(PublicKey.default)) {
+        toast.error("No unpaid member found for round-robin.");
+        return;
+      }
+    } else {
+      recipient = members.find((m) => !m.account.payoutReceived)?.account.wallet ?? PublicKey.default;
+      if (recipient.equals(PublicKey.default)) {
+        toast.error("No unpaid member found.");
+        return;
+      }
     }
     if (!groupAddress) return;
     setActionStatus("Distributing pool...");

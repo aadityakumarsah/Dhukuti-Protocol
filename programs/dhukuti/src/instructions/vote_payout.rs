@@ -8,7 +8,7 @@ pub struct VotePayout<'info> {
     #[account(mut)]
     pub voter: Signer<'info>,
     #[account(mut)]
-    pub group: Account<'info, DhukutiGroup>,
+    pub group: Box<Account<'info, DhukutiGroup>>,
     #[account(
         seeds = [b"member", group.key().as_ref(), voter.key().as_ref()],
         bump = voter_member.bump
@@ -51,11 +51,19 @@ pub fn vote_payout(ctx: Context<VotePayout>, nominee: Pubkey) -> Result<()> {
     vote_record.nominee = nominee;
     vote_record.bump = ctx.bumps.vote_record;
 
-    if group.vote_leader == nominee {
-        group.vote_leader_count = group.vote_leader_count.saturating_add(1);
-    } else if group.vote_leader_count == 0 {
-        group.vote_leader = nominee;
-        group.vote_leader_count = 1;
+    let mut found = false;
+    for i in 0..group.vote_count as usize {
+        if group.vote_nominees[i] == nominee {
+            group.vote_counts[i] = group.vote_counts[i].saturating_add(1);
+            found = true;
+            break;
+        }
+    }
+    if !found {
+        let idx = group.vote_count as usize;
+        group.vote_nominees[idx] = nominee;
+        group.vote_counts[idx] = 1;
+        group.vote_count += 1;
     }
 
     Ok(())

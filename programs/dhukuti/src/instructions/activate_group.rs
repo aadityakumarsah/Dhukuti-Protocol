@@ -7,7 +7,7 @@ use crate::state::{DhukutiGroup, GroupStatus};
 pub struct ActivateGroup<'info> {
     pub creator: Signer<'info>,
     #[account(mut, has_one = creator)]
-    pub group: Account<'info, DhukutiGroup>,
+    pub group: Box<Account<'info, DhukutiGroup>>,
 }
 
 pub fn activate_group(ctx: Context<ActivateGroup>) -> Result<()> {

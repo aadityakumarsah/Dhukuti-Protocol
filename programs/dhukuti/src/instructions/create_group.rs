@@ -67,8 +67,9 @@ pub fn create_group(
     group.total_contributed_this_cycle = 0;
     group.contributions_this_cycle = 0;
     group.current_recipient = Pubkey::default();
-    group.vote_leader = Pubkey::default();
-    group.vote_leader_count = 0;
+    group.vote_nominees = [Pubkey::default(); 32];
+    group.vote_counts = [0; 32];
+    group.vote_count = 0;
     group.bump = ctx.bumps.group;
     group.vault_bump = ctx.bumps.vault;
 

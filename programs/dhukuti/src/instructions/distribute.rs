@@ -8,7 +8,7 @@ use crate::state::{AllocationMethod, DhukutiGroup, GroupStatus, Member};
 pub struct Distribute<'info> {
     pub authority: Signer<'info>,
     #[account(mut)]
-    pub group: Account<'info, DhukutiGroup>,
+    pub group: Box<Account<'info, DhukutiGroup>>,
     #[account(
         mut,
         seeds = [b"member", group.key().as_ref(), recipient.key().as_ref()],
@@ -46,8 +46,14 @@ pub fn distribute(ctx: Context<Distribute>) -> Result<()> {
     );
 
     if group.allocation_method == AllocationMethod::Vote {
+        let mut best_idx = 0usize;
+        for i in 0..group.vote_count as usize {
+            if group.vote_counts[i] > group.vote_counts[best_idx] {
+                best_idx = i;
+            }
+        }
         require!(
-            group.vote_leader == ctx.accounts.recipient.key(),
+            group.vote_nominees[best_idx] == ctx.accounts.recipient.key(),
             DhukutiError::VoteNotWon
         );
     } else if group.allocation_method == AllocationMethod::RoundRobin {
@@ -86,8 +92,9 @@ pub fn distribute(ctx: Context<Distribute>) -> Result<()> {
     group.current_cycle += 1;
     group.total_contributed_this_cycle = 0;
     group.contributions_this_cycle = 0;
-    group.vote_leader = Pubkey::default();
-    group.vote_leader_count = 0;
+    group.vote_nominees = [Pubkey::default(); 32];
+    group.vote_counts = [0; 32];
+    group.vote_count = 0;
     group.cycle_started_at = Clock::get()?.unix_timestamp;
 
     if group.current_cycle == group.max_members {

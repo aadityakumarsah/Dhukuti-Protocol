@@ -29,8 +29,9 @@ export type DhukutiGroupData = {
   totalContributedThisCycle: BN;
   contributionsThisCycle: number;
   currentRecipient: PublicKey;
-  voteLeader: PublicKey;
-  voteLeaderCount: number;
+  voteNominees: PublicKey[];
+  voteCounts: number[];
+  voteCount: number;
 };
 
 export type MemberData = {

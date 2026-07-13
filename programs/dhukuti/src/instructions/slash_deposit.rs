@@ -7,7 +7,7 @@ use crate::state::{DhukutiGroup, GroupStatus, Member, GRACE_PERIOD_SECONDS};
 pub struct SlashDeposit<'info> {
     pub authority: Signer<'info>,
     #[account(mut)]
-    pub group: Account<'info, DhukutiGroup>,
+    pub group: Box<Account<'info, DhukutiGroup>>,
     #[account(mut)]
     pub defaulter_wallet: SystemAccount<'info>,
     #[account(
