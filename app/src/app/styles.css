@@ -287,3 +287,149 @@ select {
 .members-table tr:hover {
   background: #fbfcf9 !important;
 }
+
+/* ===== Responsive ===== */
+
+.button-row {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+
+  .hero {
+    padding: 24px 14px 20px;
+    gap: 20px;
+  }
+
+  .hero-copy h2 {
+    font-size: 1.8rem;
+  }
+
+  .hero-copy p {
+    font-size: 0.92rem;
+  }
+
+  .workspace {
+    padding: 0 14px 40px;
+    gap: 12px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .button-row {
+    gap: 8px;
+  }
+
+  .button-row .primary-button,
+  .button-row .secondary-button {
+    font-size: 0.82rem;
+    padding: 0 10px;
+    min-height: 36px;
+    flex: 1 1 auto;
+  }
+
+  .field-grid {
+    gap: 10px;
+  }
+
+  .members-table thead {
+    display: none;
+  }
+
+  .members-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 6px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .members-table tbody td {
+    padding: 2px 4px !important;
+    border-bottom: none !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .members-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.3px;
+  }
+
+  .members-table tbody td:first-child::before {
+    content: "Wallet";
+  }
+
+  .members-table tbody td:nth-child(2)::before {
+    content: "Contributed";
+  }
+
+  .members-table tbody td:nth-child(3)::before {
+    content: "Paid Out";
+  }
+
+  .members-table tbody td:last-child::before {
+    content: "Reputation";
+  }
+}
+
+@media (max-width: 400px) {
+  .button-row .primary-button,
+  .button-row .secondary-button {
+    font-size: 0.75rem;
+    padding: 0 8px;
+    min-height: 32px;
+  }
+
+  .network-hint {
+    display: none;
+  }
+}
+
+/* GroupSelector mobile adjustments */
+@media (max-width: 480px) {
+  .group-selector-input-row {
+    flex-direction: column;
+  }
+
+  .group-selector-input-row input {
+    width: 100%;
+  }
+
+  .group-selector-input-row button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .brand {
+    width: 100%;
+  }
+
+  .topbar-actions {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar-actions > button,
+  .topbar-actions > a,
+  .topbar-actions > span {
+    font-size: 0.72rem !important;
+    padding: 0 8px !important;
+    min-height: 30px !important;
+    height: 30px !important;
+  }
+}

@@ -248,7 +248,7 @@ export function GroupDashboard({ groupAddress }: Props) {
                   const shortAddress = `${displayAddress.slice(0, 6)}...${displayAddress.slice(-4)}`;
                   return (
                     <tr key={publicKey.toBase58()} style={{ borderBottom: "1px solid #f0f0f0" }}>
-                      <td style={{ padding: "8px 4px", fontWeight: isCurrentWallet ? "bold" : "normal" }}>
+                      <td data-label="Wallet" style={{ padding: "8px 4px", fontWeight: isCurrentWallet ? "bold" : "normal" }}>
                         <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
                           <span 
                             style={{ 
@@ -274,17 +274,17 @@ export function GroupDashboard({ groupAddress }: Props) {
                           )}
                         </span>
                       </td>
-                      <td style={{ padding: "8px 4px" }}>
+                      <td data-label="Contributed" style={{ padding: "8px 4px" }}>
                         {account.cyclesContributed} cycle{account.cyclesContributed !== 1 && "s"}
                       </td>
-                      <td style={{ padding: "8px 4px" }}>
+                      <td data-label="Paid Out" style={{ padding: "8px 4px" }}>
                         {account.payoutReceived ? (
                           <span style={{ color: "#166534", fontWeight: 500 }}>Yes (Cycle {account.payoutCycle})</span>
                         ) : (
                           <span style={{ color: "var(--muted)" }}>No</span>
                         )}
                       </td>
-                      <td style={{ padding: "8px 4px", textAlign: "right", fontWeight: 600 }}>
+                      <td data-label="Reputation" style={{ padding: "8px 4px", textAlign: "right", fontWeight: 600 }}>
                         {account.reputationScore}
                       </td>
                     </tr>
