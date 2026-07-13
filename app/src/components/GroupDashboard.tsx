@@ -137,15 +137,17 @@ export function GroupDashboard({ groupAddress }: Props) {
     const method = getEnumKey(group.allocationMethod);
     let recipient: PublicKey;
     if (method === "vote") {
-      let bestIdx = 0;
+      const unpaid = new Set(members.filter((m) => !m.account.payoutReceived).map((m) => m.account.wallet.toBase58()));
+      let bestIdx = -1;
       for (let i = 0; i < group.voteCount; i++) {
-        if (group.voteCounts[i] > group.voteCounts[bestIdx]) bestIdx = i;
+        if (!unpaid.has(group.voteNominees[i].toBase58())) continue;
+        if (bestIdx === -1 || group.voteCounts[i] > group.voteCounts[bestIdx]) bestIdx = i;
       }
-      recipient = group.voteNominees[bestIdx];
-      if (!recipient || recipient.equals(PublicKey.default)) {
-        toast.error("No vote leader yet. Vote first.");
+      if (bestIdx === -1) {
+        toast.error("No unpaid nominee found with votes.");
         return;
       }
+      recipient = group.voteNominees[bestIdx];
     } else if (method === "roundRobin") {
       recipient = members.find((m) => !m.account.payoutReceived)?.account.wallet ?? PublicKey.default;
       if (recipient.equals(PublicKey.default)) {

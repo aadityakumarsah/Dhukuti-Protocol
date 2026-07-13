@@ -4,7 +4,6 @@ use crate::errors::DhukutiError;
 use crate::state::{AllocationMethod, DhukutiGroup, GroupStatus, Member, VoteRecord};
 
 #[derive(Accounts)]
-#[instruction(nominee: Pubkey)]
 pub struct VotePayout<'info> {
     #[account(mut)]
     pub voter: Signer<'info>,
@@ -15,11 +14,6 @@ pub struct VotePayout<'info> {
         bump = voter_member.bump
     )]
     pub voter_member: Account<'info, Member>,
-    #[account(
-        seeds = [b"member", group.key().as_ref(), nominee.key().as_ref()],
-        bump = nominee_member.bump
-    )]
-    pub nominee_member: Account<'info, Member>,
     #[account(
         init,
         payer = voter,
@@ -48,10 +42,6 @@ pub fn vote_payout(ctx: Context<VotePayout>, nominee: Pubkey) -> Result<()> {
     require!(
         ctx.accounts.voter.key() != nominee,
         DhukutiError::CannotSelfVote
-    );
-    require!(
-        !ctx.accounts.nominee_member.payout_received,
-        DhukutiError::PayoutAlreadyReceived
     );
 
     let vote_record = &mut ctx.accounts.vote_record;

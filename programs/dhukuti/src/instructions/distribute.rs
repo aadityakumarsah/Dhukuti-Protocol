@@ -46,16 +46,14 @@ pub fn distribute(ctx: Context<Distribute>) -> Result<()> {
     );
 
     if group.allocation_method == AllocationMethod::Vote {
-        let mut best_idx = 0usize;
+        let mut has_votes = false;
         for i in 0..group.vote_count as usize {
-            if group.vote_counts[i] > group.vote_counts[best_idx] {
-                best_idx = i;
+            if group.vote_nominees[i] == ctx.accounts.recipient.key() && group.vote_counts[i] > 0 {
+                has_votes = true;
+                break;
             }
         }
-        require!(
-            group.vote_nominees[best_idx] == ctx.accounts.recipient.key(),
-            DhukutiError::VoteNotWon
-        );
+        require!(has_votes, DhukutiError::VoteNotWon);
     } else if group.allocation_method == AllocationMethod::RoundRobin {
         // For round-robin, the frontend passes the recipient in join order.
         // The program verifies the recipient is a valid member who hasn't been paid.

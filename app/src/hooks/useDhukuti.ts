@@ -233,7 +233,6 @@ export function useDhukuti() {
   async function votePayout(group: PublicKey, nominee: PublicKey) {
     if (!program || !wallet) throw new Error("Connect a wallet first.");
     const [voterMember] = deriveMember(group, wallet.publicKey);
-    const [nomineeMember] = deriveMember(group, nominee);
     const groupAccount = await program.account.dhukutiGroup.fetch(group);
     const voteRecord = PublicKey.findProgramAddressSync(
       [Buffer.from("vote"), group.toBuffer(), Buffer.from([groupAccount.currentCycle]), wallet.publicKey.toBuffer()],
@@ -246,7 +245,6 @@ export function useDhukuti() {
         voter: wallet.publicKey,
         group,
         voterMember,
-        nomineeMember,
         voteRecord,
         systemProgram: SystemProgram.programId
       })
