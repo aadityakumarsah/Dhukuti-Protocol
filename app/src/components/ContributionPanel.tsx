@@ -8,9 +8,10 @@ import { useDhukuti } from "@/hooks/useDhukuti";
 
 type Props = {
   groupAddress?: PublicKey | null;
+  onGroupSelected?: (address: PublicKey) => void;
 };
 
-export function ContributionPanel({ groupAddress }: Props) {
+export function ContributionPanel({ groupAddress, onGroupSelected }: Props) {
   const { contribute, joinGroup, connected } = useDhukuti();
   const [status, setStatus] = useState("");
   const [groupInput, setGroupInput] = useState("");
@@ -39,6 +40,7 @@ export function ContributionPanel({ groupAddress }: Props) {
     try {
       const signature = action === "join" ? await joinGroup(group) : await contribute(group);
       setStatus(`Confirmed: ${signature.slice(0, 10)}...`);
+      onGroupSelected?.(group);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Transaction failed.");
     }
