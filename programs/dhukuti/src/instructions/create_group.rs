@@ -10,7 +10,8 @@ use crate::state::{AllocationMethod, DhukutiGroup, GroupStatus, MAX_FEE_BPS, MAX
     max_members: u8,
     cycle_period: i64,
     allocation_method: AllocationMethod,
-    protocol_fee_bps: u16
+    protocol_fee_bps: u16,
+    salt: u64
 )]
 pub struct CreateGroup<'info> {
     #[account(mut)]
@@ -19,7 +20,7 @@ pub struct CreateGroup<'info> {
         init,
         payer = creator,
         space = DhukutiGroup::LEN,
-        seeds = [b"group", creator.key().as_ref()],
+        seeds = [b"group", creator.key().as_ref(), salt.to_le_bytes().as_ref()],
         bump
     )]
     pub group: Account<'info, DhukutiGroup>,
@@ -41,6 +42,7 @@ pub fn create_group(
     cycle_period: i64,
     allocation_method: AllocationMethod,
     protocol_fee_bps: u16,
+    salt: u64,
 ) -> Result<()> {
     require!(
         max_members > 1 && max_members as usize <= MAX_MEMBERS,
@@ -67,6 +69,7 @@ pub fn create_group(
     group.total_contributed_this_cycle = 0;
     group.contributions_this_cycle = 0;
     group.current_recipient = Pubkey::default();
+    group.salt = salt;
     group.vote_nominees = [Pubkey::default(); 32];
     group.vote_counts = [0; 32];
     group.vote_count = 0;

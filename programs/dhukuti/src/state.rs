@@ -21,6 +21,7 @@ pub struct DhukutiGroup {
     pub total_contributed_this_cycle: u64,
     pub contributions_this_cycle: u8,
     pub current_recipient: Pubkey,
+    pub salt: u64,
     pub vote_nominees: [Pubkey; 32],
     pub vote_counts: [u8; 32],
     pub vote_count: u8,
@@ -30,7 +31,7 @@ pub struct DhukutiGroup {
 
 impl DhukutiGroup {
     pub const LEN: usize =
-        8 + 32 + 32 + 8 + 8 + 1 + 1 + 8 + 8 + 1 + 1 + 1 + 2 + 8 + 1 + 32 + (32 * 32) + (32 * 1) + 1 + 1 + 1;
+        8 + 32 + 32 + 8 + 8 + 1 + 1 + 8 + 8 + 1 + 1 + 1 + 2 + 8 + 1 + 32 + 8 + (32 * 32) + (32 * 1) + 1 + 1 + 1;
 }
 
 #[account]

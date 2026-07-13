@@ -8,11 +8,7 @@ use crate::state::{DhukutiGroup, GroupStatus, Member};
 pub struct WithdrawDeposit<'info> {
     #[account(mut)]
     pub wallet: Signer<'info>,
-    #[account(
-        mut,
-        seeds = [b"group", group.creator.as_ref()],
-        bump = group.bump
-    )]
+    #[account(mut)]
     pub group: Box<Account<'info, DhukutiGroup>>,
     #[account(
         mut,

@@ -29,6 +29,7 @@ export type DhukutiGroupData = {
   totalContributedThisCycle: BN;
   contributionsThisCycle: number;
   currentRecipient: PublicKey;
+  salt: BN;
   voteNominees: PublicKey[];
   voteCounts: number[];
   voteCount: number;
@@ -103,8 +104,10 @@ export function useDhukuti() {
     const idl = { ...dhukutiIdl, address: DHUKUTI_PROGRAM_ID.toBase58() } as Idl;
     return new Program(idl, provider) as DhukutiProgram;
   }, [provider]);
-
   const deriveGroup = useCallback((creator: PublicKey) => PublicKey.findProgramAddressSync([Buffer.from("group"), creator.toBuffer()], DHUKUTI_PROGRAM_ID), []);
+
+  const deriveGroupWithSalt = useCallback((creator: PublicKey, salt: BN) => PublicKey.findProgramAddressSync([Buffer.from("group"), creator.toBuffer(), Buffer.from(salt.toArray("le", 8))], DHUKUTI_PROGRAM_ID), []);
+
   const deriveVault = useCallback((group: PublicKey) => PublicKey.findProgramAddressSync([Buffer.from("vault"), group.toBuffer()], DHUKUTI_PROGRAM_ID), []);
   const deriveMember = useCallback((group: PublicKey, member: PublicKey) =>
     PublicKey.findProgramAddressSync([Buffer.from("member"), group.toBuffer(), member.toBuffer()], DHUKUTI_PROGRAM_ID), []);
@@ -165,7 +168,8 @@ export function useDhukuti() {
 
   async function createGroup(input: CreateGroupInput) {
     if (!program || !wallet) throw new Error("Connect a wallet first.");
-    const [group] = deriveGroup(wallet.publicKey);
+    const salt = new BN(Date.now());
+    const [group] = deriveGroupWithSalt(wallet.publicKey, salt);
     const [vault] = deriveVault(group);
     const allocationMethod = { [input.allocationMethod]: {} };
 
@@ -176,7 +180,8 @@ export function useDhukuti() {
         input.maxMembers,
         new BN(input.cycleDays * 86_400),
         allocationMethod,
-        input.protocolFeeBps
+        input.protocolFeeBps,
+        salt
       )
       .accounts({
         creator: wallet.publicKey,

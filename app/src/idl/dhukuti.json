@@ -22,7 +22,8 @@
         { "name": "maxMembers", "type": "u8" },
         { "name": "cyclePeriod", "type": "i64" },
         { "name": "allocationMethod", "type": { "defined": { "name": "AllocationMethod" } } },
-        { "name": "protocolFeeBps", "type": "u16" }
+        { "name": "protocolFeeBps", "type": "u16" },
+        { "name": "salt", "type": "u64" }
       ]
     },
     {
@@ -148,6 +149,7 @@
           { "name": "totalContributedThisCycle", "type": "u64" },
           { "name": "contributionsThisCycle", "type": "u8" },
           { "name": "currentRecipient", "type": "pubkey" },
+          { "name": "salt", "type": "u64" },
           { "name": "voteNominees", "type": { "array": ["pubkey", 32] } },
           { "name": "voteCounts", "type": { "array": ["u8", 32] } },
           { "name": "voteCount", "type": "u8" },

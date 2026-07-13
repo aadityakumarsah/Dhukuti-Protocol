@@ -20,6 +20,7 @@ pub mod dhukuti {
         cycle_period: i64,
         allocation_method: state::AllocationMethod,
         protocol_fee_bps: u16,
+        salt: u64,
     ) -> Result<()> {
         instructions::create_group(
             ctx,
@@ -29,6 +30,7 @@ pub mod dhukuti {
             cycle_period,
             allocation_method,
             protocol_fee_bps,
+            salt,
         )
     }
 
