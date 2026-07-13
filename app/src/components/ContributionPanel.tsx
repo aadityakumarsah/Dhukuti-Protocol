@@ -38,25 +38,8 @@ export function ContributionPanel({ groupAddress, onGroupSelected }: Props) {
     setStatus(action === "join" ? "Joining group..." : "Sending contribution...");
 
     try {
-      if (action === "join") {
-        const sig = await joinGroup(group);
-        setStatus(`Joined: ${sig.slice(0, 10)}...`);
-      } else {
-        try {
-          const sig = await contribute(group);
-          setStatus(`Contributed: ${sig.slice(0, 10)}...`);
-        } catch (contributeErr) {
-          const msg = contributeErr instanceof Error ? contributeErr.message : "";
-          if (msg.includes("AccountNotInitialized") || msg.includes("member")) {
-            setStatus("Not a member yet. Joining first...");
-            await joinGroup(group);
-            const sig = await contribute(group);
-            setStatus(`Contributed: ${sig.slice(0, 10)}...`);
-          } else {
-            throw contributeErr;
-          }
-        }
-      }
+      const sig = action === "join" ? await joinGroup(group) : await contribute(group);
+      setStatus(`Confirmed: ${sig.slice(0, 10)}...`);
       onGroupSelected?.(group);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Transaction failed.");
