@@ -63,11 +63,8 @@ pub fn distribute(ctx: Context<Distribute>) -> Result<()> {
         .unwrap();
     let payout = gross_pool.checked_sub(fee).unwrap();
 
-    let vault_seeds = &[
-        b"vault",
-        group.key().as_ref(),
-        &[group.vault_bump],
-    ];
+    let group_key = group.key();
+    let vault_seeds = &[b"vault", group_key.as_ref(), &[group.vault_bump]];
     transfer(
         CpiContext::new_with_signer(
             ctx.accounts.system_program.to_account_info(),
