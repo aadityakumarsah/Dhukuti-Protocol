@@ -180,61 +180,61 @@ export function GroupDashboard({ groupAddress }: Props) {
             <div className="data-row">
               <span>Status</span>
               <strong className={isLoading ? "skeleton-text" : "status-pill"}>
-                {isLoading ? "" : formatStatus(group.status)}
+                {isLoading || !group ? "" : formatStatus(group.status)}
               </strong>
             </div>
             <div className="data-row">
               <span>Cycle</span>
-              <strong className={isLoading ? "skeleton-text" : ""}>
-                {isLoading ? "" : `${group.currentCycle} / ${group.maxMembers}`}
+              <strong className={isLoading || !group ? "skeleton-text" : ""}>
+                {isLoading || !group ? "" : `${group.currentCycle} / ${group.maxMembers}`}
               </strong>
             </div>
             <div className="data-row">
               <span>Members</span>
-              <strong className={isLoading ? "skeleton-text" : ""}>
-                {isLoading ? "" : `${group.currentMembers} / ${group.maxMembers}`}
+              <strong className={isLoading || !group ? "skeleton-text" : ""}>
+                {isLoading || !group ? "" : `${group.currentMembers} / ${group.maxMembers}`}
               </strong>
             </div>
             <div className="data-row">
               <span>Contribution</span>
-              <strong className={isLoading ? "skeleton-text" : ""}>
-                {isLoading ? "" : `${fromLamports(group.contributionAmount)} SOL`}
+              <strong className={isLoading || !group ? "skeleton-text" : ""}>
+                {isLoading || !group ? "" : `${fromLamports(group.contributionAmount)} SOL`}
               </strong>
             </div>
             <div className="data-row">
               <span>Deposit</span>
-              <strong className={isLoading ? "skeleton-text" : ""}>
-                {isLoading ? "" : `${fromLamports(group.securityDeposit)} SOL`}
+              <strong className={isLoading || !group ? "skeleton-text" : ""}>
+                {isLoading || !group ? "" : `${fromLamports(group.securityDeposit)} SOL`}
               </strong>
             </div>
             <div className="data-row">
               <span>Pool (full)</span>
-              <strong className={isLoading ? "skeleton-text" : ""}>
-                {isLoading ? "" : `${fromLamports({ toString: () => String(poolLamports) })} SOL`}
+              <strong className={isLoading || !group ? "skeleton-text" : ""}>
+                {isLoading || !group ? "" : `${fromLamports({ toString: () => String(poolLamports) })} SOL`}
               </strong>
             </div>
             <div className="data-row">
               <span>Pool this cycle</span>
-              <strong className={isLoading ? "skeleton-text" : ""}>
-                {isLoading ? "" : `${fromLamports({ toString: () => String(poolSoFar) })} SOL`}
+              <strong className={isLoading || !group ? "skeleton-text" : ""}>
+                {isLoading || !group ? "" : `${fromLamports({ toString: () => String(poolSoFar) })} SOL`}
               </strong>
             </div>
             <div className="data-row">
               <span>Allocation</span>
-              <strong className={isLoading ? "skeleton-text" : ""}>
-                {isLoading ? "" : formatAllocation(group.allocationMethod)}
+              <strong className={isLoading || !group ? "skeleton-text" : ""}>
+                {isLoading || !group ? "" : formatAllocation(group.allocationMethod)}
               </strong>
             </div>
             <div className="data-row">
               <span>Vault</span>
-              <strong className={isLoading ? "skeleton-text" : ""}>
-                {isLoading ? "" : "PDA escrow"}
+              <strong className={isLoading || !group ? "skeleton-text" : ""}>
+                {isLoading || !group ? "" : "PDA escrow"}
               </strong>
             </div>
             <div className="data-row">
               <span>Group address</span>
-              <strong className={isLoading ? "skeleton-text" : ""} style={isLoading ? {} : { fontSize: "0.75rem" }}>
-                {isLoading ? "" : `${groupAddress.toBase58().slice(0, 16)}...`}
+              <strong className={isLoading || !group ? "skeleton-text" : ""} style={isLoading || !group ? {} : { fontSize: "0.75rem" }}>
+                {isLoading || !group ? "" : `${groupAddress.toBase58().slice(0, 16)}...`}
               </strong>
             </div>
           </div>
@@ -272,7 +272,7 @@ export function GroupDashboard({ groupAddress }: Props) {
             <h4 style={{ fontSize: "0.95rem", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
               <span>Members List</span>
               <span style={{ fontSize: "0.8rem", fontWeight: "normal", color: "var(--muted)" }}>
-                {isLoading ? "" : `(${members.length} / ${group.maxMembers} joined)`}
+                {isLoading || !group ? "" : `(${members.length} / ${group.maxMembers} joined)`}
               </span>
             </h4>
             {members.length === 0 && !isLoading ? (
