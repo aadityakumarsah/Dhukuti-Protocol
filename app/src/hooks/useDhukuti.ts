@@ -3,7 +3,7 @@
 import { AnchorProvider, BN, Idl, Program, setProvider, web3 } from "@coral-xyz/anchor";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 
 import dhukutiIdl from "@/idl/dhukuti.json";
 
@@ -102,32 +102,32 @@ export function useDhukuti() {
     return new Program(idl, provider) as DhukutiProgram;
   }, [provider]);
 
-  const deriveGroup = (creator: PublicKey) => PublicKey.findProgramAddressSync([Buffer.from("group"), creator.toBuffer()], DHUKUTI_PROGRAM_ID);
-  const deriveVault = (group: PublicKey) => PublicKey.findProgramAddressSync([Buffer.from("vault"), group.toBuffer()], DHUKUTI_PROGRAM_ID);
-  const deriveMember = (group: PublicKey, member: PublicKey) =>
-    PublicKey.findProgramAddressSync([Buffer.from("member"), group.toBuffer(), member.toBuffer()], DHUKUTI_PROGRAM_ID);
-  const deriveReputation = (group: PublicKey, member: PublicKey) =>
-    PublicKey.findProgramAddressSync([Buffer.from("reputation"), group.toBuffer(), member.toBuffer()], DHUKUTI_PROGRAM_ID);
+  const deriveGroup = useCallback((creator: PublicKey) => PublicKey.findProgramAddressSync([Buffer.from("group"), creator.toBuffer()], DHUKUTI_PROGRAM_ID), []);
+  const deriveVault = useCallback((group: PublicKey) => PublicKey.findProgramAddressSync([Buffer.from("vault"), group.toBuffer()], DHUKUTI_PROGRAM_ID), []);
+  const deriveMember = useCallback((group: PublicKey, member: PublicKey) =>
+    PublicKey.findProgramAddressSync([Buffer.from("member"), group.toBuffer(), member.toBuffer()], DHUKUTI_PROGRAM_ID), []);
+  const deriveReputation = useCallback((group: PublicKey, member: PublicKey) =>
+    PublicKey.findProgramAddressSync([Buffer.from("reputation"), group.toBuffer(), member.toBuffer()], DHUKUTI_PROGRAM_ID), []);
 
-  async function getGroup(address: PublicKey): Promise<DhukutiGroupData | null> {
+  const getGroup = useCallback(async (address: PublicKey): Promise<DhukutiGroupData | null> => {
     if (!program) return null;
     try {
       return await program.account.dhukutiGroup.fetch(address);
     } catch {
       return null;
     }
-  }
+  }, [program]);
 
-  async function getMember(address: PublicKey): Promise<MemberData | null> {
+  const getMember = useCallback(async (address: PublicKey): Promise<MemberData | null> => {
     if (!program) return null;
     try {
       return await program.account.member.fetch(address);
     } catch {
       return null;
     }
-  }
+  }, [program]);
 
-  async function getGroupMembers(groupAddress: PublicKey): Promise<{ publicKey: PublicKey; account: MemberData }[]> {
+  const getGroupMembers = useCallback(async (groupAddress: PublicKey): Promise<{ publicKey: PublicKey; account: MemberData }[]> => {
     if (!program) return [];
     try {
       return await program.account.member.all([
@@ -142,7 +142,24 @@ export function useDhukuti() {
       console.error("Error fetching group members:", e);
       return [];
     }
-  }
+  }, [program]);
+
+  const getUserGroups = useCallback(async (userWallet: PublicKey): Promise<{ publicKey: PublicKey; account: MemberData }[]> => {
+    if (!program) return [];
+    try {
+      return await program.account.member.all([
+        {
+          memcmp: {
+            offset: 40, // 8 (discriminator) + 32 (group pubkey)
+            bytes: userWallet.toBase58(),
+          },
+        },
+      ]);
+    } catch (e) {
+      console.error("Error fetching user groups:", e);
+      return [];
+    }
+  }, [program]);
 
   async function createGroup(input: CreateGroupInput) {
     if (!program || !wallet) throw new Error("Connect a wallet first.");
@@ -285,6 +302,7 @@ export function useDhukuti() {
     getGroup,
     getMember,
     getGroupMembers,
+    getUserGroups,
     createGroup,
     joinGroup,
     activateGroup,

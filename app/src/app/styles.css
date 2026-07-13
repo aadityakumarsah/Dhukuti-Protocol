@@ -288,6 +288,29 @@ select {
   background: #fbfcf9 !important;
 }
 
+/* ===== Skeleton loading ===== */
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.15; }
+}
+
+.skeleton-text {
+  display: inline-block;
+  min-width: 80px;
+  height: 1em;
+  border-radius: 4px;
+  background: var(--line);
+  animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+
+.skeleton-table {
+  height: 120px;
+  border-radius: 6px;
+  background: var(--line);
+  animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+
 /* ===== Responsive ===== */
 
 .button-row {
