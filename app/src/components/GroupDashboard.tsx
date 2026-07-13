@@ -2,7 +2,7 @@
 
 import { Activity, Copy, ExternalLink, Play, RefreshCw, Send } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import { useDhukuti, DhukutiGroupData, MemberData, formatStatus, formatAllocation, getEnumKey } from "@/hooks/useDhukuti";
 
@@ -22,33 +22,35 @@ export function GroupDashboard({ groupAddress }: Props) {
   const [copied, setCopied] = useState(false);
   const [actionStatus, setActionStatus] = useState("");
 
-  useEffect(() => {
+  const loadData = useCallback(async (showLoading = false) => {
     if (!groupAddress || !connected) {
       setGroup(null);
       setMembers([]);
       return;
     }
-    setGroup("loading");
-
-    const refreshData = async () => {
-      try {
-        const groupData = await getGroup(groupAddress);
-        setGroup(groupData);
-        if (groupData) {
-          const membersData = await getGroupMembers(groupAddress);
-          setMembers(membersData);
-        } else {
-          setMembers([]);
-        }
-      } catch (e) {
-        console.error("Error reloading dashboard data:", e);
+    if (showLoading) {
+      setGroup("loading");
+    }
+    try {
+      const groupData = await getGroup(groupAddress);
+      setGroup(groupData);
+      if (groupData) {
+        const membersData = await getGroupMembers(groupAddress);
+        setMembers(membersData);
+      } else {
+        setMembers([]);
       }
-    };
-
-    refreshData();
-    const interval = setInterval(refreshData, 10_000);
-    return () => clearInterval(interval);
+    } catch (e) {
+      console.error("Error loading dashboard data:", e);
+      if (showLoading) {
+        setGroup(null);
+      }
+    }
   }, [groupAddress, connected, getGroup, getGroupMembers]);
+
+  useEffect(() => {
+    loadData(true);
+  }, [loadData]);
 
   if (!groupAddress) {
     return (
@@ -99,7 +101,7 @@ export function GroupDashboard({ groupAddress }: Props) {
           <button
             className="secondary-button"
             type="button"
-            onClick={() => { setGroup("loading"); getGroup(groupAddress).then(setGroup); }}
+            onClick={() => loadData(true)}
           >
             <RefreshCw size={17} />
             Retry
@@ -122,8 +124,7 @@ export function GroupDashboard({ groupAddress }: Props) {
     try {
       const sig = await activateGroup(groupAddress);
       setActionStatus(`Activated: ${sig.slice(0, 10)}...`);
-      const data = await getGroup(groupAddress);
-      setGroup(data);
+      await loadData();
     } catch (e) {
       setActionStatus(e instanceof Error ? e.message : "Activation failed.");
     }
@@ -141,8 +142,7 @@ export function GroupDashboard({ groupAddress }: Props) {
     try {
       const sig = await distribute(groupAddress, recipient);
       setActionStatus(`Distributed: ${sig.slice(0, 10)}...`);
-      const data = await getGroup(groupAddress);
-      setGroup(data);
+      await loadData();
     } catch (e) {
       setActionStatus(e instanceof Error ? e.message : "Distribution failed.");
     }
@@ -202,7 +202,7 @@ export function GroupDashboard({ groupAddress }: Props) {
           <ExternalLink size={17} />
           Explorer
         </a>
-        <button className="secondary-button" type="button" onClick={() => { setGroup("loading"); getGroup(groupAddress).then(setGroup); }}>
+        <button className="secondary-button" type="button" onClick={() => loadData(true)}>
           <Activity size={17} />
           Refresh
         </button>
