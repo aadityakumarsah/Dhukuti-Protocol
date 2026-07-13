@@ -80,8 +80,8 @@ export function formatStatus(status: EnumObject): string {
 
 export function formatAllocation(method: EnumObject): string {
   const key = getEnumKey(method);
-  if (key === "Vote") return "Janamat vote";
-  if (key === "Random") return "Random draw";
+  if (key === "vote") return "Janamat vote";
+  if (key === "random") return "Random draw";
   return "Auction";
 }
 
