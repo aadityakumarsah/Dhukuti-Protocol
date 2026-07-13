@@ -113,8 +113,8 @@ export function GroupDashboard({ groupAddress }: Props) {
     ? Number(group.totalContributedThisCycle.toString())
     : 0;
   const isCreator = groupFound && wallet?.publicKey.equals(group.creator);
-  const isForming = groupFound && getEnumKey(group.status) === "Forming";
-  const isActive = groupFound && getEnumKey(group.status) === "Active";
+  const isForming = groupFound && getEnumKey(group.status) === "forming";
+  const isActive = groupFound && getEnumKey(group.status) === "active";
   const allContributed = groupFound && group.contributionsThisCycle >= group.currentMembers;
 
   async function handleActivate() {
