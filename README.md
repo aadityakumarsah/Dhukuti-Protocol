@@ -4,7 +4,7 @@
 
 **Dhukuti** (Nepal), **Chit Fund** (India), **Susu** (West Africa), **Arisan** (Indonesia), **Paluwagan** (Philippines) — billions of people rely on informal rotating savings circles. Dhukuti Protocol replaces organizer custody with Solana smart-contract escrow.
 
-📖 **[Read the docs →](https://docsdhukuti-protocol.vercel.app/)**  
+📖 **[Read the docs →](https://docs-dhukuti-protocol.vercel.app/)**  
 🌐 **[Launch the app →](https://dhukuti-protocol.vercel.app)**
 
 ---
@@ -187,5 +187,5 @@ Current deployed program ID: `egyrA1EJRsr2b7QbciVXX78U3TkPy8GQ9dTDJQHPHvo`
 ## Links
 
 - **App**: [dhukuti-protocol.vercel.app](https://dhukuti-protocol.vercel.app)
-- **Docs**: [docsdhukuti-protocol.vercel.app](https://docsdhukuti-protocol.vercel.app)
+- **Docs**: [docs-dhukuti-protocol.vercel.app](https://docs-dhukuti-protocol.vercel.app)
 - **GitHub**: [github.com/aadityakumarsah/Dhukuti-Protocol](https://github.com/aadityakumarsah/Dhukuti-Protocol)

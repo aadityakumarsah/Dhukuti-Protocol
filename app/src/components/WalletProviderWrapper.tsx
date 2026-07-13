@@ -356,7 +356,7 @@ function HomeContent() {
         </div>
         <div className="topbar-actions" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
           <a
-            href="https://docsdhukuti-protocol.vercel.app"
+            href="https://docs-dhukuti-protocol.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
             className="secondary-button"
