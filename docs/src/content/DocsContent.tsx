@@ -454,6 +454,340 @@ export function DocsContent() {
         <li>Public devnet RPC may be rate-limited</li>
       </ul>
 
+      <h2 id="step-by-step-user-guide">Step-by-Step User Guide</h2>
+      <p>This guide walks through everything from setting up your wallet to completing a full group cycle.</p>
+
+      <h3>1. Set Up Your Wallet</h3>
+      <ol>
+        <li>
+          <strong>Install Solflare</strong> — Download the Solflare wallet extension for Chrome or your mobile browser from{" "}
+          <a href="https://solflare.com" className="text-primary underline">solflare.com</a>.
+        </li>
+        <li>
+          <strong>Create a wallet</strong> — Follow the setup wizard. Save your seed phrase somewhere safe (offline, not on your computer).
+        </li>
+        <li>
+          <strong>Switch to Devnet</strong> — Click the gear icon → Network → <strong>Devnet</strong>.
+          This is a test network with free play money. Never use real SOL until mainnet launch.
+        </li>
+      </ol>
+
+      <h3>2. Get Free Devnet SOL</h3>
+      <ol>
+        <li>
+          Copy your wallet address (click the copy icon next to your wallet name in Solflare).
+        </li>
+        <li>
+          Go to <a href="https://faucet.solana.com" className="text-primary underline">faucet.solana.com</a>.
+        </li>
+        <li>
+          Paste your address and request SOL. Do this <strong>twice</strong> so you have enough.
+        </li>
+        <li>
+          You need at least <strong>0.1 SOL</strong> per wallet (0.05 contribution + 0.02 deposit + gas).
+        </li>
+        <li>
+          If you plan to create and test with multiple wallets, fund each wallet separately.
+        </li>
+      </ol>
+
+      <h3>3. Open the App</h3>
+      <ol>
+        <li>
+          Visit <a href="https://dhukuti-protocol.vercel.app" className="text-primary underline">dhukuti-protocol.vercel.app</a>.
+        </li>
+        <li>
+          Click <strong>Connect Wallet</strong> (top right) and select Solflare.
+        </li>
+        <li>
+          Approve the connection in Solflare.
+        </li>
+        <li>
+          Verify the top bar shows <strong>Devnet</strong> (not "Other" or "Mainnet").
+        </li>
+      </ol>
+
+      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4 my-6">
+        <p className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-1">⚠ Important: RPC Setup</p>
+        <p className="text-sm text-amber-700 dark:text-amber-400">
+          The app uses <code>api.devnet.solana.com</code> by default, which has strict rate limits. If you see <strong>"429 rate limit"</strong> errors:
+        </p>
+        <ol className="text-sm text-amber-700 dark:text-amber-400 mt-2 ml-4 list-decimal space-y-1">
+          <li>Go to <a href="https://helius.dev" className="underline">helius.dev</a>, sign up, and create a Devnet API key.</li>
+          <li>In your deployed Vercel project (Settings → Environment Variables), set <code>NEXT_PUBLIC_SOLANA_RPC</code> to <code>https://devnet.helius-rpc.com/?api-key=YOUR_KEY</code>.</li>
+          <li>Also set it in <code>app/.env</code> for local development.</li>
+          <li>Redeploy or restart the dev server.</li>
+        </ol>
+      </div>
+
+      <h3>4. Create a Group</h3>
+      <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 my-4">
+        <p className="text-sm font-medium text-blue-800 dark:text-blue-300">💡 Key Rule: Set Members = 2 for testing</p>
+        <p className="text-sm text-blue-700 dark:text-blue-400">
+          The program requires <strong>all member slots to be filled</strong> before activation. If you set Members = 5, you need 5 people to join before you can activate. For testing, always set <strong>Members = 2</strong> (you + one other).
+        </p>
+      </div>
+      <ol>
+        <li>
+          In the <strong>Create Dhukuti Group</strong> form, set:
+          <ul>
+            <li><strong>Contribution SOL:</strong> <code>0.05</code> (amount each member pays per cycle)</li>
+            <li><strong>Security Deposit SOL:</strong> <code>0.02</code> (refundable deposit to prevent default)</li>
+            <li><strong>Members:</strong> <code>2</code> (for testing with one other person)</li>
+            <li><strong>Cycle Days:</strong> <code>30</code> (can be shorter for testing)</li>
+            <li><strong>Allocation:</strong> <code>Janamat vote</code> (the only fully implemented method)</li>
+            <li><strong>Protocol Fee BPS:</strong> <code>50</code> (0.5%)</li>
+          </ul>
+        </li>
+        <li>Click <strong>Create</strong> and approve the transaction in Solflare.</li>
+        <li>
+          Wait for confirmation. You'll see the group address appear. <strong>Copy this address</strong> — you'll share it with the other member.
+        </li>
+        <li>
+          The Group Dashboard will show: <strong>Status: Forming</strong>, <strong>Members: 0 / 2</strong>.
+        </li>
+      </ol>
+
+      <h3>5. Join the Group (Both Wallets)</h3>
+      <ol>
+        <li>
+          <strong>Creator must also join!</strong> The creator is NOT automatically a member. You must click <strong>Join</strong> yourself.
+        </li>
+        <li>
+          In the <strong>Contribution</strong> panel, paste the group address and click <strong>Join</strong>.
+        </li>
+        <li>
+          Approve the transaction. This creates your member account and transfers the security deposit to the vault.
+        </li>
+        <li>
+          <strong>Switch wallets:</strong> Open a second Solflare wallet (create a new one or import via seed phrase on another device/browser).
+        </li>
+        <li>
+          Connect the second wallet to the app, paste the group address, and click <strong>Join</strong>.
+        </li>
+        <li>
+          The dashboard should now show: <strong>Members: 2 / 2</strong>.
+        </li>
+      </ol>
+
+      <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 my-4">
+        <p className="text-sm font-medium text-blue-800 dark:text-blue-300">🔍 Verify on Solscan</p>
+        <p className="text-sm text-blue-700 dark:text-blue-400">
+          Open <a href="https://solscan.io/?cluster=devnet" className="underline">Solscan Devnet</a> and search for the vault address (derived from your group). The vault should show <strong>0.04 SOL</strong> (2 × 0.02 deposit). If it shows 0 SOL, the deposits didn't transfer — check that both wallets had enough Devnet SOL.
+        </p>
+      </div>
+
+      <h3>6. Activate the Group</h3>
+      <ol>
+        <li>
+          <strong>Switch back to the creator wallet</strong> (the one that created the group).
+        </li>
+        <li>
+          Look at the Group Dashboard — you should see a green <strong>Activate</strong> button in the button row.
+        </li>
+        <li>
+          Click <strong>Activate</strong> and approve the transaction.
+        </li>
+        <li>
+          The status changes to <strong>Active</strong>. Cycle 1 begins.
+        </li>
+      </ol>
+
+      <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 my-4">
+        <p className="text-sm font-medium text-red-800 dark:text-red-300">⚠ If Activate button doesn't appear</p>
+        <p className="text-sm text-red-700 dark:text-red-400">
+          Check that: (1) you're on the creator wallet, (2) Members shows <strong>2 / 2</strong>, (3) the vault has SOL. If still stuck, see the Troubleshooting section below.
+        </p>
+      </div>
+
+      <h3>7. Contribute</h3>
+      <ol>
+        <li>
+          Each member must click <strong>Contribute</strong> (NOT Join — you already joined) in the Contribution panel.
+        </li>
+        <li>
+          Approve the transaction. This sends 0.05 SOL to the vault.
+        </li>
+        <li>
+          Both members must contribute before distribution is possible.
+        </li>
+        <li>
+          <strong>Important:</strong> If you see <strong>"AlreadyContributed"</strong>, that means you already contributed this cycle. Don't worry — just move to voting.
+        </li>
+      </ol>
+
+      <h3>8. Vote</h3>
+      <ol>
+        <li>
+          Go to the <strong>Janamat Vote</strong> panel.
+        </li>
+        <li>
+          The group address should auto-fill. In the <strong>Payout nominee</strong> field, enter the wallet address of the person you want to receive the pool this cycle.
+        </li>
+        <li>
+          Click <strong>Vote</strong> and approve.
+        </li>
+        <li>
+          <strong>Both members should vote</strong> for the same person (or different — majority wins).
+        </li>
+      </ol>
+
+      <h3>9. Distribute</h3>
+      <ol>
+        <li>
+          After all members have contributed AND voted, the creator sees a <strong>Distribute</strong> button.
+        </li>
+        <li>
+          Click it to send the full pool to the vote winner's wallet.
+        </li>
+        <li>
+          The vault balance goes back to deposits-only. The next cycle begins.
+        </li>
+      </ol>
+
+      <h3>10. Complete &amp; Claim Reputation</h3>
+      <ol>
+        <li>
+          After all cycles are done (everyone has received a payout once), status becomes <strong>Completed</strong>.
+        </li>
+        <li>
+          Individual members can go to the <strong>Reputation</strong> panel and click <strong>Claim</strong> to mint an on-chain reputation attestation.
+        </li>
+      </ol>
+
+      <h2 id="troubleshooting">Troubleshooting Guide</h2>
+      <p>Here are solutions for every error you might encounter, based on real testing.</p>
+
+      <h3>Wallet &amp; Connection Issues</h3>
+
+      <h4>"Connected to Other" instead of "Devnet"</h4>
+      <p>The RPC genesis hash doesn't match. This is cosmetic — transactions still work. To fix:</p>
+      <ul>
+        <li>In Solflare settings, set Network to <strong>Devnet</strong>.</li>
+        <li>Ensure the app's RPC is pointing to devnet (check <code>app/.env</code>).</li>
+      </ul>
+
+      <h4>Wallet says "Unknown site" / "Simulation failed"</h4>
+      <p>This is normal for custom apps. The wallet can't simulate transactions on unknown sites. Click <strong>"I trust this site"</strong> and then <strong>Approve</strong>. The transaction will still execute correctly.</p>
+
+      <h4>Transaction shows "429 rate limit exceeded"</h4>
+      <p>You're hitting the public devnet RPC throttle. Fix:</p>
+      <ol>
+        <li>Get a free Helius API key from <a href="https://helius.dev" className="text-primary underline">helius.dev</a>.</li>
+        <li>Set <code>NEXT_PUBLIC_SOLANA_RPC=https://devnet.helius-rpc.com/?api-key=YOUR_KEY</code> in your Vercel env vars and <code>app/.env</code>.</li>
+        <li>Redeploy or restart the dev server.</li>
+      </ol>
+
+      <h3>Group Creation Issues</h3>
+
+      <h4>"Account already in use" when creating a group</h4>
+      <p>Each wallet can only create <strong>one</strong> group. The group PDA is derived from your wallet address. If you already created a group from this wallet, create a <strong>new wallet</strong> to create another group.</p>
+
+      <h3>Group Activation Issues</h3>
+
+      <h4>"GroupNotReady" (Error 6002)</h4>
+      <p>This means <strong>not all member slots are filled</strong>. If you set <strong>Members = 5</strong>, you need 5 people to join before you can activate. For testing, create a new group with <strong>Members = 2</strong>.</p>
+
+      <h4>Activate button doesn't appear</h4>
+      <ol>
+        <li>Check you're on the <strong>creator wallet</strong> (the one that clicked Create).</li>
+        <li>Check Members shows <strong>X / X</strong> (all slots filled).</li>
+        <li>Hard refresh the page (<code>Cmd+Shift+R</code>).</li>
+        <li>Check the browser console for errors (<code>F12</code> → Console tab).</li>
+      </ol>
+
+      <h3>Contribution Issues</h3>
+
+      <h4>"InvalidGroupStatus" (Error 6001)</h4>
+      <p>You tried to contribute before the group was activated. Wait for the creator to click <strong>Activate</strong> first.</p>
+
+      <h4>"AlreadyContributed" (Error 6003)</h4>
+      <p>You already contributed this cycle. You don't need to contribute again — move on to <strong>Voting</strong>.</p>
+
+      <h4>"AccountNotInitialized" for member</h4>
+      <p>You tried to contribute without joining first. Click <strong>Join</strong> first, wait for it to confirm, then click <strong>Contribute</strong>.</p>
+
+      <h4>"Allocate: account already in use" on Join</h4>
+      <p>You already joined this group. The Join button won't work twice — just click <strong>Contribute</strong> instead.</p>
+
+      <h3>Distribution Issues</h3>
+
+      <h4>"instruction spent from the balance of an account it does not own"</h4>
+      <p>The vault doesn't have enough SOL to distribute. Check that <strong>all members have contributed</strong> this cycle. If the vault is empty, this group may be stuck — create a new one.</p>
+
+      <h4>"No vote leader yet"</h4>
+      <p>No one has voted yet. All members need to go to the <strong>Vote</strong> panel and cast a vote for a nominee before distribution is possible.</p>
+
+      <h3>How to Check On-Chain Data (Solscan)</h3>
+      <p>
+        Solscan is a block explorer for Solana. You can use it to verify all group activity:
+      </p>
+      <ol>
+        <li>
+          Go to <a href="https://solscan.io/?cluster=devnet" className="text-primary underline">solscan.io</a> and make sure you're on <strong>Devnet</strong> (top right dropdown).
+        </li>
+        <li>
+          <strong>Check your wallet:</strong> Paste your wallet address to see balance and transaction history. Each transaction shows the fee, time, and status.
+        </li>
+        <li>
+          <strong>Check the group PDA:</strong> Paste the group address (e.g., <code>8DuG9sCN...</code>). This is the group account with all its data.
+        </li>
+        <li>
+          <strong>Check the vault PDA:</strong> The vault holds all member deposits and contributions. Look at the <strong>SOL Balance</strong> to see total funds.
+          <ul>
+            <li><strong>0 SOL</strong> — No one has paid in yet. Members need to Join/Contribute.</li>
+            <li><strong>2 × deposit = 0.04 SOL</strong> — Members have joined but not yet contributed for the cycle.</li>
+            <li><strong>2 × (deposit + contribution) = 0.14 SOL</strong> — Both members have joined AND contributed.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Check transactions:</strong> The <strong>Transactions</strong> tab shows every instruction executed on this account. Look for <code>createAccount</code> (member created), <code>transfer</code> (SOL moved), etc.
+        </li>
+      </ol>
+
+      <h3>Common Pitfalls &amp; Best Practices</h3>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b border-border">
+              <th className="text-left py-2 px-3 font-medium">Pitfall</th>
+              <th className="text-left py-2 px-3 font-medium">Why It Happens</th>
+              <th className="text-left py-2 px-3 font-medium">Fix</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ["Group stuck in Forming", "Not enough members joined", "Set Members = 2 for testing, or get more people to join"],
+              ["Vault has 0 SOL", "Join transactions didn't transfer deposit", "Fund wallets with Devnet SOL from faucet first"],
+              ["Deselect doesn't stick", "Auto-select effect re-selects own group", "Hard refresh after deselecting"],
+              ["Simulation failed popup", "Wallet can't simulate custom program", "Check 'I trust this site' and Approve"],
+              ["Wrong network shown", "RPC connected to different cluster", "Set wallet and RPC both to Devnet"],
+              ["Activate button hidden", "Enum comparison bug (fixed now)", "Redeploy latest code from main branch"],
+            ].map(([pitfall, why, fix]) => (
+              <tr key={pitfall} className="border-b border-border">
+                <td className="py-2 px-3 font-medium">{pitfall}</td>
+                <td className="py-2 px-3 text-muted-foreground">{why}</td>
+                <td className="py-2 px-3 text-muted-foreground">{fix}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 my-6">
+        <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">✅ Quick Checklist for a Successful Group</p>
+        <ol className="text-sm text-emerald-700 dark:text-emerald-400 mt-2 ml-4 list-decimal space-y-1">
+          <li>Both wallets funded with Devnet SOL (0.1 SOL each min)</li>
+          <li>Set Members = 2 when creating the group</li>
+          <li>Creator joins too (not auto-added)</li>
+          <li>Check vault has 0.04 SOL before activating</li>
+          <li>Click Activate from creator wallet</li>
+          <li>Both members click Contribute (once group is Active)</li>
+          <li>Both members Vote</li>
+          <li>Creator clicks Distribute</li>
+        </ol>
+      </div>
+
       <h2 id="installation">Installation</h2>
       <div className="bg-muted rounded-lg p-4 my-6">
         <pre className="text-sm overflow-x-auto">
