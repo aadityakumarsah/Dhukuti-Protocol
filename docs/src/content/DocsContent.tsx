@@ -330,7 +330,24 @@ export function DocsContent() {
       </ol>
 
       <h2 id="how-the-app-works-user-flow">How the App Works (User Flow)</h2>
+
+      <figure className="my-8 rounded-lg overflow-hidden border border-border">
+        <img src="/images/app-layout.svg" alt="Dhukuti Protocol app layout overview" className="w-full" />
+        <figcaption className="text-xs text-muted-foreground text-center py-2 bg-muted/50">
+          App layout: ① Connect wallet at top right &amp; check network ② App description with key features
+          ③ Main workspace with all panels ④ Create Group form ⑤ Group Dashboard with status &amp; actions
+          ⑥ Action panels: Join, Contribute, Vote, Claim
+        </figcaption>
+      </figure>
+
       <h3>1. Create Group</h3>
+      <figure className="my-6 rounded-lg overflow-hidden border border-border">
+        <img src="/images/create-group.svg" alt="Create Group form" className="w-full" />
+        <figcaption className="text-xs text-muted-foreground text-center py-2 bg-muted/50">
+          ① Set contribution amount ② Set Members = 2 for testing ③ Click Create &amp; approve
+          ④ Copy group address to share
+        </figcaption>
+      </figure>
       <p>
         One user (creator) fills the form with contribution amount, security deposit, max members,
         cycle days, and allocation method. The creator approves the transaction to create the group
@@ -345,11 +362,24 @@ export function DocsContent() {
       </p>
 
       <h3>3. Activate Group</h3>
+      <figure className="my-6 rounded-lg overflow-hidden border border-border">
+        <img src="/images/group-dashboard.svg" alt="Group Dashboard" className="w-full" />
+        <figcaption className="text-xs text-muted-foreground text-center py-2 bg-muted/50">
+          ① Check status — must be "Active" ② Creator clicks Activate ③ Verify all members joined
+          ④ Check vault balance on Solscan
+        </figcaption>
+      </figure>
       <p>
         Creator clicks Activate. Status changes to <strong>Active</strong>. Cycle 1 begins.
       </p>
 
       <h3>4. Each Cycle</h3>
+      <figure className="my-6 rounded-lg overflow-hidden border border-border">
+        <img src="/images/contribute-vote.svg" alt="Contribute and Vote panels" className="w-full" />
+        <figcaption className="text-xs text-muted-foreground text-center py-2 bg-muted/50">
+          ① First Join, then Contribute ② Paste nominee wallet address for voting ③ Approve in wallet
+        </figcaption>
+      </figure>
       <ol>
         <li>All members click <strong>Contribute</strong> (pays contribution to vault).</li>
         <li>Members <strong>Vote</strong> on who gets the payout.</li>
