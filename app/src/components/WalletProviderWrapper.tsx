@@ -304,14 +304,10 @@ function HomeContent() {
     if (!connected || !ownGroup || !program) return;
     getGroup(ownGroup).then((data) => {
       if (data) {
-        const addrStr = ownGroup.toBase58();
-        saveGroupAddress(addrStr);
-        if (!selectedGroup) {
-          setSelectedGroup(ownGroup);
-        }
+        saveGroupAddress(ownGroup.toBase58());
       }
     });
-  }, [connected, ownGroup, selectedGroup, getGroup, program]);
+  }, [connected, ownGroup, getGroup, program]);
 
   function handleGroupCreated(address: PublicKey) {
     setSelectedGroup(address);
