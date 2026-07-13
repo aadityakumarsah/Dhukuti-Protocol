@@ -266,3 +266,24 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+/* Members Table styling */
+.members-table th {
+  padding: 10px 8px !important;
+  border-bottom: 2px solid var(--line) !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  color: var(--muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.members-table td {
+  padding: 12px 8px !important;
+  border-bottom: 1px solid var(--line) !important;
+  vertical-align: middle !important;
+}
+
+.members-table tr:hover {
+  background: #fbfcf9 !important;
+}

@@ -47,10 +47,205 @@ function NetworkBadge({ detected }: { detected: string }) {
   );
 }
 
+function GroupSelector({
+  selectedGroup,
+  setSelectedGroup,
+  savedGroups,
+  saveGroupAddress,
+  getGroup,
+  connected
+}: {
+  selectedGroup: PublicKey | null;
+  setSelectedGroup: (pubkey: PublicKey | null) => void;
+  savedGroups: string[];
+  saveGroupAddress: (addr: string) => void;
+  getGroup: (address: PublicKey) => Promise<any>;
+  connected: boolean;
+}) {
+  const [inputVal, setInputVal] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const handleLoad = async (addressStr: string) => {
+    setErrorMsg("");
+    setSuccessMsg("");
+    if (!addressStr.trim()) {
+      setErrorMsg("Please enter a group address.");
+      return;
+    }
+    let pubkey: PublicKey;
+    try {
+      pubkey = new PublicKey(addressStr.trim());
+    } catch {
+      setErrorMsg("Invalid group address format.");
+      return;
+    }
+
+    try {
+      const data = await getGroup(pubkey);
+      if (data) {
+        setSelectedGroup(pubkey);
+        saveGroupAddress(pubkey.toBase58());
+        setSuccessMsg("Group loaded successfully!");
+        setInputVal("");
+      } else {
+        setErrorMsg("Group not found on-chain.");
+      }
+    } catch (e) {
+      setErrorMsg("Error loading group details.");
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!selectedGroup) return;
+    await navigator.clipboard.writeText(selectedGroup.toBase58());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="panel" style={{ gridColumn: "span 12", marginBottom: 8 }}>
+      <h3 style={{ margin: "0 0 12px 0", display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ display: "inline-flex", padding: 6, background: "var(--bg)", borderRadius: 6, color: "var(--primary)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </span>
+        Group Selector & Quick Switcher
+      </h3>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
+        {/* Active Group Details */}
+        <div style={{ flex: "1 1 300px", minWidth: "280px" }}>
+          <p style={{ margin: "0 0 6px 0", fontSize: "0.82rem", fontWeight: 600, color: "var(--muted)" }}>Active Selection</p>
+          {selectedGroup ? (
+            <div style={{
+              background: "#f0fdf4",
+              border: "1px solid #b9f6ca",
+              borderRadius: 6,
+              padding: "12px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 8
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ 
+                  background: "#166534", 
+                  color: "white", 
+                  fontSize: "0.7rem", 
+                  fontWeight: "bold", 
+                  padding: "2px 6px", 
+                  borderRadius: 4,
+                  textTransform: "uppercase"
+                }}>
+                  Active
+                </span>
+                <span style={{ fontSize: "0.78rem", fontFamily: "monospace", wordBreak: "break-all", fontWeight: 500 }}>
+                  {selectedGroup.toBase58()}
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button 
+                  className="secondary-button" 
+                  style={{ minHeight: 28, height: 28, padding: "0 8px", fontSize: "0.75rem" }} 
+                  onClick={handleCopy}
+                >
+                  {copied ? "Copied!" : "Copy Address"}
+                </button>
+                <button 
+                  className="secondary-button" 
+                  style={{ minHeight: 28, height: 28, padding: "0 8px", fontSize: "0.75rem", background: "#fee2e2", color: "#b91c1c" }} 
+                  onClick={() => setSelectedGroup(null)}
+                >
+                  Deselect
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              background: "#fffbeb",
+              border: "1px solid #fef3c7",
+              borderRadius: 6,
+              padding: "12px",
+              fontSize: "0.82rem",
+              color: "#b45309"
+            }}>
+              No active group selected. Load an existing group by address below or select from your recent groups.
+            </div>
+          )}
+        </div>
+
+        {/* Load Group Form */}
+        <div style={{ flex: "1 1 300px", minWidth: "280px" }}>
+          <p style={{ margin: "0 0 6px 0", fontSize: "0.82rem", fontWeight: 600, color: "var(--muted)" }}>Load Group Address</p>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              type="text"
+              placeholder="Paste 44-character group PDA"
+              value={inputVal}
+              onChange={(e) => setInputVal(e.target.value)}
+              style={{ minHeight: 38, height: 38, padding: "8px 10px", fontSize: "0.82rem" }}
+              disabled={!connected}
+            />
+            <button
+              className="primary-button"
+              style={{ minHeight: 38, height: 38, padding: "0 12px", fontSize: "0.82rem", whiteSpace: "nowrap" }}
+              disabled={!connected}
+              onClick={() => handleLoad(inputVal)}
+            >
+              Load Group
+            </button>
+          </div>
+          {errorMsg && <p className="warning" style={{ margin: "4px 0 0 0", fontSize: "0.78rem" }}>{errorMsg}</p>}
+          {successMsg && <p style={{ margin: "4px 0 0 0", fontSize: "0.78rem", color: "#166534", fontWeight: 500 }}>{successMsg}</p>}
+        </div>
+      </div>
+
+      {/* Saved Groups switcher */}
+      {savedGroups.length > 0 && (
+        <div style={{ marginTop: 16, borderTop: "1px solid var(--line)", paddingTop: 12 }}>
+          <p style={{ margin: "0 0 8px 0", fontSize: "0.82rem", fontWeight: 600, color: "var(--muted)" }}>Recent Groups</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {savedGroups.map((address) => {
+              const isActive = selectedGroup?.toBase58() === address;
+              const short = `${address.slice(0, 8)}...${address.slice(-6)}`;
+              return (
+                <button
+                  key={address}
+                  onClick={() => handleLoad(address)}
+                  className="secondary-button"
+                  style={{
+                    minHeight: 28,
+                    height: 28,
+                    padding: "0 10px",
+                    fontSize: "0.75rem",
+                    border: isActive ? "1.5px solid var(--primary)" : "1px solid var(--line)",
+                    background: isActive ? "#e6fffa" : "#f5f6f4",
+                    fontWeight: isActive ? "bold" : "normal"
+                  }}
+                  title={address}
+                  disabled={!connected}
+                >
+                  {short}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function HomeContent() {
   const { connection, wallet, deriveGroup, getGroup, connected, program } = useDhukuti();
   const [selectedGroup, setSelectedGroup] = useState<PublicKey | null>(null);
   const [networkName, setNetworkName] = useState("");
+  const [savedGroups, setSavedGroups] = useState<string[]>([]);
 
   useEffect(() => {
     connection.getGenesisHash().then((hash) => {
@@ -60,17 +255,50 @@ function HomeContent() {
     }).catch(() => setNetworkName("Unknown"));
   }, [connection]);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("dhukuti_saved_groups");
+    if (saved) {
+      try {
+        setSavedGroups(JSON.parse(saved));
+      } catch {
+        // ignore
+      }
+    }
+  }, []);
+
+  const saveGroupAddress = (addressStr: string) => {
+    if (!addressStr) return;
+    try {
+      new PublicKey(addressStr);
+    } catch {
+      return;
+    }
+    setSavedGroups((prev) => {
+      if (prev.includes(addressStr)) return prev;
+      const updated = [addressStr, ...prev];
+      localStorage.setItem("dhukuti_saved_groups", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const ownGroup = wallet ? deriveGroup(wallet.publicKey)[0] : null;
 
   useEffect(() => {
-    if (!connected || !ownGroup || selectedGroup || !program) return;
+    if (!connected || !ownGroup || !program) return;
     getGroup(ownGroup).then((data) => {
-      if (data) setSelectedGroup(ownGroup);
+      if (data) {
+        const addrStr = ownGroup.toBase58();
+        saveGroupAddress(addrStr);
+        if (!selectedGroup) {
+          setSelectedGroup(ownGroup);
+        }
+      }
     });
   }, [connected, ownGroup, selectedGroup, getGroup, program]);
 
   function handleGroupCreated(address: PublicKey) {
     setSelectedGroup(address);
+    saveGroupAddress(address.toBase58());
   }
 
   return (
@@ -163,9 +391,20 @@ function HomeContent() {
       </section>
 
       <section className="workspace">
+        <GroupSelector
+          selectedGroup={selectedGroup}
+          setSelectedGroup={setSelectedGroup}
+          savedGroups={savedGroups}
+          saveGroupAddress={saveGroupAddress}
+          getGroup={getGroup}
+          connected={connected}
+        />
         <CreateGroup onGroupCreated={handleGroupCreated} />
         <GroupDashboard groupAddress={selectedGroup} />
-        <ContributionPanel groupAddress={selectedGroup} />
+        <ContributionPanel groupAddress={selectedGroup} onGroupSelected={(addr) => {
+          setSelectedGroup(addr);
+          saveGroupAddress(addr.toBase58());
+        }} />
         <VotingPanel groupAddress={selectedGroup} />
         <ReputationCard groupAddress={selectedGroup} />
       </section>

@@ -4,7 +4,7 @@ import { Activity, Copy, ExternalLink, Play, RefreshCw, Send } from "lucide-reac
 import { PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 
-import { useDhukuti, DhukutiGroupData, formatStatus, formatAllocation, getEnumKey } from "@/hooks/useDhukuti";
+import { useDhukuti, DhukutiGroupData, MemberData, formatStatus, formatAllocation, getEnumKey } from "@/hooks/useDhukuti";
 
 function fromLamports(amount: { toString: () => string }): string {
   const val = Number(amount.toString()) / 1_000_000_000;
@@ -16,25 +16,39 @@ type Props = {
 };
 
 export function GroupDashboard({ groupAddress }: Props) {
-  const { getGroup, connected, wallet, activateGroup, distribute } = useDhukuti();
+  const { getGroup, getGroupMembers, connected, wallet, activateGroup, distribute } = useDhukuti();
   const [group, setGroup] = useState<DhukutiGroupData | null | "loading">(null);
+  const [members, setMembers] = useState<{ publicKey: PublicKey; account: MemberData }[]>([]);
   const [copied, setCopied] = useState(false);
   const [actionStatus, setActionStatus] = useState("");
 
   useEffect(() => {
     if (!groupAddress || !connected) {
       setGroup(null);
+      setMembers([]);
       return;
     }
     setGroup("loading");
-    getGroup(groupAddress).then((data) => setGroup(data));
-    const interval = setInterval(() => {
-      if (groupAddress) {
-        getGroup(groupAddress).then((data) => setGroup(data));
+
+    const refreshData = async () => {
+      try {
+        const groupData = await getGroup(groupAddress);
+        setGroup(groupData);
+        if (groupData) {
+          const membersData = await getGroupMembers(groupAddress);
+          setMembers(membersData);
+        } else {
+          setMembers([]);
+        }
+      } catch (e) {
+        console.error("Error reloading dashboard data:", e);
       }
-    }, 10_000);
+    };
+
+    refreshData();
+    const interval = setInterval(refreshData, 10_000);
     return () => clearInterval(interval);
-  }, [groupAddress, connected, getGroup]);
+  }, [groupAddress, connected, getGroup, getGroupMembers]);
 
   if (!groupAddress) {
     return (
@@ -206,6 +220,81 @@ export function GroupDashboard({ groupAddress }: Props) {
         )}
       </div>
       {actionStatus ? <p className="warning" style={{ marginTop: 12 }}>{actionStatus}</p> : null}
+
+      <div style={{ marginTop: 24, borderTop: "1px solid var(--line)", paddingTop: 20 }}>
+        <h4 style={{ fontSize: "0.95rem", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+          <span>Members List</span>
+          <span style={{ fontSize: "0.8rem", fontWeight: "normal", color: "var(--muted)" }}>
+            ({members.length} / {group.maxMembers} joined)
+          </span>
+        </h4>
+        {members.length === 0 ? (
+          <p className="muted" style={{ fontSize: "0.82rem" }}>No members found. Share the group address to let others join!</p>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table className="members-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", textAlign: "left" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--line)" }}>
+                  <th style={{ padding: "8px 4px", color: "var(--muted)", fontWeight: 500 }}>Wallet Address</th>
+                  <th style={{ padding: "8px 4px", color: "var(--muted)", fontWeight: 500 }}>Contributed</th>
+                  <th style={{ padding: "8px 4px", color: "var(--muted)", fontWeight: 500 }}>Paid Out?</th>
+                  <th style={{ padding: "8px 4px", color: "var(--muted)", fontWeight: 500, textAlign: "right" }}>Reputation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map(({ publicKey, account }) => {
+                  const isCurrentWallet = wallet?.publicKey.equals(account.wallet);
+                  const displayAddress = account.wallet.toBase58();
+                  const shortAddress = `${displayAddress.slice(0, 6)}...${displayAddress.slice(-4)}`;
+                  return (
+                    <tr key={publicKey.toBase58()} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                      <td style={{ padding: "8px 4px", fontWeight: isCurrentWallet ? "bold" : "normal" }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                          <span 
+                            style={{ 
+                              width: 6, 
+                              height: 6, 
+                              borderRadius: "50%", 
+                              background: account.isActive ? "#166534" : "#b91c1c",
+                              display: "inline-block" 
+                            }} 
+                            title={account.isActive ? "Active member" : "Inactive member"}
+                          />
+                          <span title={displayAddress}>{shortAddress}</span>
+                          {isCurrentWallet && (
+                            <span style={{ 
+                              fontSize: "0.7rem", 
+                              padding: "1px 4px", 
+                              background: "var(--primary)", 
+                              color: "white", 
+                              borderRadius: 4 
+                            }}>
+                              You
+                            </span>
+                          )}
+                        </span>
+                      </td>
+                      <td style={{ padding: "8px 4px" }}>
+                        {account.cyclesContributed} cycle{account.cyclesContributed !== 1 && "s"}
+                      </td>
+                      <td style={{ padding: "8px 4px" }}>
+                        {account.payoutReceived ? (
+                          <span style={{ color: "#166534", fontWeight: 500 }}>Yes (Cycle {account.payoutCycle})</span>
+                        ) : (
+                          <span style={{ color: "var(--muted)" }}>No</span>
+                        )}
+                      </td>
+                      <td style={{ padding: "8px 4px", textAlign: "right", fontWeight: 600 }}>
+                        {account.reputationScore}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

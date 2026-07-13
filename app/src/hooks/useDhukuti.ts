@@ -55,6 +55,7 @@ type DhukutiProgram = Program & {
     };
     member: {
       fetch: (address: PublicKey) => Promise<MemberData>;
+      all: (filters?: any[]) => Promise<{ publicKey: PublicKey; account: MemberData }[]>;
     };
   };
 };
@@ -123,6 +124,23 @@ export function useDhukuti() {
       return await program.account.member.fetch(address);
     } catch {
       return null;
+    }
+  }
+
+  async function getGroupMembers(groupAddress: PublicKey): Promise<{ publicKey: PublicKey; account: MemberData }[]> {
+    if (!program) return [];
+    try {
+      return await program.account.member.all([
+        {
+          memcmp: {
+            offset: 8, // 8-byte discriminator + 32-byte group pubkey
+            bytes: groupAddress.toBase58(),
+          },
+        },
+      ]);
+    } catch (e) {
+      console.error("Error fetching group members:", e);
+      return [];
     }
   }
 
@@ -266,6 +284,7 @@ export function useDhukuti() {
     deriveReputation,
     getGroup,
     getMember,
+    getGroupMembers,
     createGroup,
     joinGroup,
     activateGroup,
