@@ -293,10 +293,11 @@ export function DocsContent() {
               ["joinGroup", "Join group, pay contribution + deposit", "Any wallet"],
               ["activateGroup", "Start first cycle", "Creator only"],
               ["contribute", "Pay contribution to vault", "Active member"],
-              ["votePayout", "Vote for payout recipient", "Active member"],
-              ["distribute", "Send pool to winner", "Anyone"],
+              ["votePayout", "Vote for payout recipient (self-vote not allowed)", "Active member"],
+              ["distribute", "Send pool to winner (supports Vote &amp; RoundRobin)", "Anyone"],
               ["slashDeposit", "Slash defaulter's deposit", "Creator"],
               ["claimReputation", "Mint completion reputation", "Member"],
+              ["withdrawDeposit", "Return security deposit after completion", "Member"],
             ].map(([name, desc, caller]) => (
               <tr key={name} className="border-b border-border">
                 <td className="py-2 px-3 font-mono text-xs">{name}</td>
@@ -387,14 +388,24 @@ export function DocsContent() {
         <li>Next cycle begins automatically.</li>
       </ol>
 
-      <h3>5. Completion</h3>
+      <h3>4b. Round-Robin (No Voting)</h3>
       <p>
-        After all members have received a payout, status → <strong>Completed</strong>. Members can
-        Claim Reputation for an on-chain credit score.
+        If you select <strong>Round-robin</strong> as the allocation method when creating the group,
+        skip the voting step entirely. Members receive payouts in join order — the first to join gets
+        the first payout, the second gets the second, etc. Just Contribute → Distribute each cycle.
       </p>
 
+      <h3>5. Completion</h3>
+      <p>
+        After all members have received a payout, status → <strong>Completed</strong>. Members can:
+      </p>
+      <ol>
+        <li><strong>Claim Reputation</strong> — Mint an on-chain credit score.</li>
+        <li><strong>Withdraw Deposit</strong> — Return your 0.02 SOL security deposit from the vault.</li>
+      </ol>
+
       <div className="bg-muted rounded-lg p-4 text-center text-sm font-medium my-6">
-        Create → Join → Activate → Contribute → Vote → Distribute → Repeat until everyone gets paid.
+        Create → Join → Activate → (Contribute → Vote → Distribute | RoundRobin: Contribute → Distribute) → Claim Reputation → Withdraw Deposit
       </div>
 
       <h2 id="how-to-use-it-for-a-5-year-old">How to Use It — For a 5 Year Old</h2>
@@ -746,7 +757,13 @@ export function DocsContent() {
       <p>The vault doesn't have enough SOL to distribute. Check that <strong>all members have contributed</strong> this cycle. If the vault is empty, this group may be stuck — create a new one.</p>
 
       <h4>"No vote leader yet"</h4>
-      <p>No one has voted yet. All members need to go to the <strong>Vote</strong> panel and cast a vote for a nominee before distribution is possible.</p>
+      <p>No one has voted yet, or this is a <strong>RoundRobin</strong> group (no voting needed). All members need to go to the <strong>Vote</strong> panel and cast a vote for a nominee before distribution is possible. If using RoundRobin, just skip voting and click Distribute directly.</p>
+
+      <h4>"CannotSelfVote" (Error 6012)</h4>
+      <p>You tried to vote for yourself. Pick <strong>another</strong> member's wallet address as the nominee. The program rejects self-votes to prevent abuse.</p>
+
+      <h4>"DepositAlreadyWithdrawn" (Error 6013)</h4>
+      <p>You already withdrew your security deposit. Each member can only withdraw once, after the group is Completed.</p>
 
       <h3>How to Check On-Chain Data (Solscan)</h3>
       <p>
@@ -789,7 +806,7 @@ export function DocsContent() {
             {[
               ["Group stuck in Forming", "Not enough members joined", "Set Members = 2 for testing, or get more people to join"],
               ["Vault has 0 SOL", "Join transactions didn't transfer deposit", "Fund wallets with Devnet SOL from faucet first"],
-              ["Deselect doesn't stick", "Auto-select effect re-selects own group", "Hard refresh after deselecting"],
+              ["Distribute fails with No vote leader", "Using Vote allocation but no one voted", "Either vote or create a RoundRobin group instead"],
               ["Simulation failed popup", "Wallet can't simulate custom program", "Check 'I trust this site' and Approve"],
               ["Wrong network shown", "RPC connected to different cluster", "Set wallet and RPC both to Devnet"],
               ["Activate button hidden", "Enum comparison bug (fixed now)", "Redeploy latest code from main branch"],
@@ -813,8 +830,9 @@ export function DocsContent() {
           <li>Check vault has 0.04 SOL before activating</li>
           <li>Click Activate from creator wallet</li>
           <li>Both members click Contribute (once group is Active)</li>
-          <li>Both members Vote</li>
-          <li>Creator clicks Distribute</li>
+          <li>Vote allocation: both members Vote a different wallet / RoundRobin: skip voting</li>
+          <li>Anyone clicks Distribute each cycle</li>
+          <li>After all cycles: Claim Reputation then Withdraw Deposit</li>
         </ol>
       </div>
 
@@ -839,11 +857,15 @@ npm --prefix app run dev`}</code>
           <code>{`# Install Solana CLI
 sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
 
-# Deploy to devnet
+# Deploy to devnet (if anchor CLI is available)
 solana config set --url devnet
 solana airdrop 2
 anchor build
-anchor deploy --provider.cluster devnet`}</code>
+anchor deploy --provider.cluster devnet
+
+# On macOS ARM (no anchor CLI), use build-sbf directly
+cargo build-sbf
+solana program deploy --program-id keypair.json target/deploy/dhukuti.so`}</code>
         </pre>
       </div>
 
