@@ -3,8 +3,10 @@
 import { ExternalLink, Plus, Copy } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
 import { FormEvent, useState } from "react";
+import { toast } from "sonner";
 
 import { DHUKUTI_PROGRAM_ID, useDhukuti } from "@/hooks/useDhukuti";
+import { formatAnchorError } from "@/lib/anchorErrors";
 
 type Props = {
   onGroupCreated?: (address: PublicKey) => void;
@@ -38,7 +40,10 @@ export function CreateGroup({ onGroupCreated }: Props) {
       setCreatedGroup(groupAddress);
       onGroupCreated?.(groupAddress);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Unable to create group.");
+      toast.error(formatAnchorError(error));
+      setStatus("");
+      setCreatedGroup(null);
+      setTxSig("");
     }
   }
 

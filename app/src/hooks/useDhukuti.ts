@@ -269,6 +269,7 @@ export function useDhukuti() {
         recipientMember,
         recipient,
         vault,
+        systemProgram: SystemProgram.programId,
       })
       .rpc();
   }

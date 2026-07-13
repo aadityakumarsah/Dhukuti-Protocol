@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_lang::system_program::{transfer, Transfer};
 
 use crate::errors::DhukutiError;
 use crate::state::{AllocationMethod, DhukutiGroup, GroupStatus, Member};
@@ -24,6 +25,7 @@ pub struct Distribute<'info> {
         bump = group.vault_bump
     )]
     pub vault: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
 }
 
 pub fn distribute(ctx: Context<Distribute>) -> Result<()> {
@@ -61,16 +63,22 @@ pub fn distribute(ctx: Context<Distribute>) -> Result<()> {
         .unwrap();
     let payout = gross_pool.checked_sub(fee).unwrap();
 
-    **ctx
-        .accounts
-        .vault
-        .to_account_info()
-        .try_borrow_mut_lamports()? -= payout;
-    **ctx
-        .accounts
-        .recipient
-        .to_account_info()
-        .try_borrow_mut_lamports()? += payout;
+    let vault_seeds = &[
+        b"vault",
+        group.key().as_ref(),
+        &[group.vault_bump],
+    ];
+    transfer(
+        CpiContext::new_with_signer(
+            ctx.accounts.system_program.to_account_info(),
+            Transfer {
+                from: ctx.accounts.vault.to_account_info(),
+                to: ctx.accounts.recipient.to_account_info(),
+            },
+            &[vault_seeds],
+        ),
+        payout,
+    )?;
 
     recipient_member.payout_received = true;
     recipient_member.payout_cycle = group.current_cycle;

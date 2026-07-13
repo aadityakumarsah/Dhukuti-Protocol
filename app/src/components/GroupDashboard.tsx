@@ -3,8 +3,10 @@
 import { Activity, Copy, ExternalLink, Play, RefreshCw, Send } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { toast } from "sonner";
 
 import { useDhukuti, DhukutiGroupData, MemberData, formatStatus, formatAllocation, getEnumKey } from "@/hooks/useDhukuti";
+import { formatAnchorError } from "@/lib/anchorErrors";
 
 function fromLamports(amount: { toString: () => string }): string {
   const val = Number(amount.toString()) / 1_000_000_000;
@@ -125,7 +127,8 @@ export function GroupDashboard({ groupAddress }: Props) {
       setActionStatus(`Activated: ${sig.slice(0, 10)}...`);
       await loadData();
     } catch (e) {
-      setActionStatus(e instanceof Error ? e.message : "Activation failed.");
+      toast.error(formatAnchorError(e));
+      setActionStatus("");
     }
   }
 
@@ -133,7 +136,7 @@ export function GroupDashboard({ groupAddress }: Props) {
     if (!group) return;
     const recipient = group.voteLeader;
     if (recipient.equals(PublicKey.default)) {
-      setActionStatus("No vote leader yet. Vote first.");
+      toast.error("No vote leader yet. Vote first.");
       return;
     }
     if (!groupAddress) return;
@@ -142,8 +145,10 @@ export function GroupDashboard({ groupAddress }: Props) {
       const sig = await distribute(groupAddress, recipient);
       setActionStatus(`Distributed: ${sig.slice(0, 10)}...`);
       await loadData();
+      toast.success("Pool distributed!");
     } catch (e) {
-      setActionStatus(e instanceof Error ? e.message : "Distribution failed.");
+      toast.error(formatAnchorError(e));
+      setActionStatus("");
     }
   }
 

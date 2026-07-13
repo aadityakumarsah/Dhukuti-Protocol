@@ -3,8 +3,10 @@
 import { Vote } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
 import { FormEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { useDhukuti } from "@/hooks/useDhukuti";
+import { formatAnchorError } from "@/lib/anchorErrors";
 
 type Props = {
   groupAddress?: PublicKey | null;
@@ -48,7 +50,8 @@ export function VotingPanel({ groupAddress }: Props) {
       const signature = await votePayout(group, nominee);
       setStatus(`Voted: ${signature.slice(0, 10)}...`);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Vote failed.");
+      toast.error(formatAnchorError(error));
+      setStatus("");
     }
   }
 

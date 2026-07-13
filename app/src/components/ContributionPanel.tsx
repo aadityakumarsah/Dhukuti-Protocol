@@ -3,8 +3,10 @@
 import { HandCoins } from "lucide-react";
 import { PublicKey } from "@solana/web3.js";
 import { FormEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { useDhukuti } from "@/hooks/useDhukuti";
+import { formatAnchorError } from "@/lib/anchorErrors";
 
 type Props = {
   groupAddress?: PublicKey | null;
@@ -42,7 +44,8 @@ export function ContributionPanel({ groupAddress, onGroupSelected }: Props) {
       setStatus(`Confirmed: ${sig.slice(0, 10)}...`);
       onGroupSelected?.(group);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Transaction failed.");
+      toast.error(formatAnchorError(error));
+      setStatus("");
     }
   }
 
