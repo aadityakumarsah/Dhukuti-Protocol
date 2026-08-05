@@ -1,20 +1,20 @@
 # Dhukuti Protocol
 
-> Trustless rotating savings on Solana.
+>  Trustless rotating savings on Solana.
 
-**Dhukuti** (Nepal), **Chit Fund** (India), **Susu** (West Africa), **Arisan** (Indonesia), **Paluwagan** (Philippines) — billions of people rely on informal rotating savings circles. Dhukuti Protocol replaces organizer custody with Solana smart-contract escrow.
+**Dhukuti** (Nepal), **Chit Fund** (India), **Susu**  (West Africa), **Arisan** (Indonesia), **Paluwagan** (Philippines) — billions of people rely on informal rotating savings circles. Dhukuti Protocol replaces  organizer custody with Solana smart-contract escrow.
 
-📖 **[Read the docs →](https://docs-dhukuti-protocol.vercel.app/)**  
+📖 **[Read the docs →](https://docs-dhukuti-protocol.vercel.app/)**   
 🌐 **[Launch the app →](https://dhukuti-protocol.vercel.app)**
 
 ---
 
-## Problem
+## Proble
 
-- Organizers can run away with the pool.
-- Members can default after receiving their payout.
+- Organizers   can run away with the pool.
+- Members can.  default after receiving their payout.
 - Nobody has a reliable record of who paid.
-- Informal groups build no credit history for underbanked users.
+- Informal groups build no credit history for underbanked  users
 - Cross-border participation is difficult without trust.
 
 ## Solution
@@ -61,7 +61,7 @@ npm --prefix app install
 npm --prefix app run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Opn [http://localhost:3000](http://localhost:3000)
 
 ## Full Setup (Program + Frontend)
 
@@ -94,7 +94,7 @@ anchor build
 anchor deploy --provider.cluster devnet
 ```
 
-### 4. Configure Frontend
+### 4 Configure Frontend
 
 ```bash
 cp app/.env.example app/.env.local
@@ -133,7 +133,7 @@ Current deployed program ID: `egyrA1EJRsr2b7QbciVXX78U3TkPy8GQ9dTDJQHPHvo`
 1. Push repo to GitHub.
 2. On Vercel, import `aadityakumarsah/Dhukuti-Protocol`.
 3. Set **Root Directory** to `app`.
-4. Set **Framework Preset** to Next.js.
+4. St **Framework Preset** to Next.js.
 5. Add environment variables:
    - `NEXT_PUBLIC_SOLANA_RPC`
    - `NEXT_PUBLIC_DHUKUTI_PROGRAM_ID`
@@ -177,15 +177,15 @@ Current deployed program ID: `egyrA1EJRsr2b7QbciVXX78U3TkPy8GQ9dTDJQHPHvo`
 
 ## MVP Limitations
 
-- Random and auction allocation methods are declared but not fully implemented.
-- Vote tally tracks the current leader (simple design).
-- zk reputation proofs are placeholders.
-- Not audited — do not use with real funds.
+- Random nd auction allocation methods are declared but not fully im plemented.
+- Vote tally tracks the current leader (simple design) . 
+-  zk re putation proofs are placeholders .
+- Not audited — do not use with real funds .
 
 ---
 
 ## Links
 
-- **App**: [dhukuti-protocol.vercel.app](https://dhukuti-protocol.vercel.app)
-- **Docs**: [docs-dhukuti-protocol.vercel.app](https://docs-dhukuti-protocol.vercel.app)
-- **GitHub**: [github.com/aadityakumarsah/Dhukuti-Protocol](https://github.com/aadityakumarsah/Dhukuti-Protocol)
+- **App** : [dhukuti-protocol.vercel.app](https://dhukuti-protocol.vercel.app)
+- **Docs**:  [docs-dhukuti-protocol.vercel.app](https://docs-dhukuti-protocol.vercel.app)
+- **GitHub** : [github.com/aadityakumarsah/Dhukuti-Protocol](https://github.com/aadityakumarsah/Dhukuti-Protocol)
