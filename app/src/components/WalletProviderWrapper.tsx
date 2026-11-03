@@ -260,7 +260,7 @@ function HomeContent() {
 
   useEffect(() => {
     connection.getGenesisHash().then((hash) => {
-      if (hash === "EtWTRABZaYZqjoPVz3VQe7hMCrNzdhrbNH4YBL3zfXp") setNetworkName("Devnet");
+      if (hash === "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG") setNetworkName("Devnet");
       else if (hash === "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d") setNetworkName("Mainnet");
       else setNetworkName("Other");
     }).catch(() => setNetworkName("Unknown"));
